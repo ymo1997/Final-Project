@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light dark-primary-color" style="background-color: #1976D2; ">
+    <a class="navbar-brand text-light " href="{% url 'home' %}">AuctionGo</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto">
+        <div class="container">
+          <a class="text-light btn btn-outline-light">Register<span class="sr-only">(current)</span></a>
+          <a class="text-light btn btn-outline-light mx-1">Delete User</a>
+          <a class="text-light btn btn-outline-light mx-1">Suspend User</a>
+          <a class="text-light btn btn-outline-light mx-1">Login</a>
+          <a class="btn btn-outline-light text-light"  data-toggle="modal" data-target="#myModal">Logout</a>
+          <a class="btn btn-outline-light text-light"  data-toggle="modal" data-target="#myModal">Add Item</a>
+          <a class="btn btn-outline-light text-light"  data-toggle="modal" data-target="#myModal">Bid on Item</a>
+          <a class="btn btn-outline-light text-light"  data-toggle="modal" data-target="#myModal">Remove Item</a>
+          <a class="btn btn-outline-light text-light"  data-toggle="modal" data-target="#myModal">Purchase Item</a>
+        </div>
+      </ul>
+    </div>
+  </nav>
+
+  <div>
+    <h2 style="text-align: center;">List of items for bidding</h2>
+    <div class="container" style="float: right; width: 43%;">
+      <ul>
+        <li>
+          <div>
+            <p>Desk</p>
+            <img src="https://images.demandware.net/dw/image/v2/BBBV_PRD/on/demandware.static/-/Sites-master-catalog/default/dw7af5486b/images/1410000/1413109.jpg?sw=2000" width="300" height="150">
+          </div>
+        </li>
+        <br>
+        <li>
+          <div>
+            <p>Basketball</p>
+            <img src="https://dks.scene7.com/is/image/GolfGalaxy/16SPLUCRSSCRTFFCLBKB?wid=2000&fmt=pjpeg" width="300" height="300">
+          </div>
+        </li>
+      </ul>  
+    </div>
+    <div class="container" style="float: right; width: 43%;">
+      <ul>
+        <li>
+          <div>
+            <p>Car</p>
+            <img src="https://www.extremetech.com/wp-content/uploads/2019/12/SONATA-hero-option1-764A5360-edit-768x425.jpg" width="300" height="150">
+          </div>
+        </li>
+        <br>
+        <li>
+          <div>
+            <p>Bed</p>
+            <img src="https://i1.adis.ws/i/hmk/123031?h=500&w=598&sm=CM&h=500&w=598&sm=CM" width="300" height="300">
+          </div>
+        </li>
+      </ul>  
+    </div>
+  </div>
+  
+</body>
+</html>

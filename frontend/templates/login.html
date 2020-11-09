@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <script>
+    // The test about personal info
+    function loginTest() {
+        var info = document.getElementById("info").value;
+        alert("Your info: " + info.toString());
+    }
+  </script>
+</head>
+<body>
+  <div>
+    <h2>Login</h2>
+    <form>
+      <p>Username or Email: <input type="text" id="info" onchange="loginTest()"/></p>
+      <p>Password: <input type="password"/></p>
+      <input type="submit" value="Login" />
+    </form>
+  </div>
+</body>
+</html>

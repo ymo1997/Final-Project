@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<head>
+  <title>Registration</title>
+  <script>
+    // The test about email
+    function emailTest() {
+        var email = document.getElementById("email").value;
+        alert("Your email: " + email.toString());
+    }
+  </script>
+</head>
+<html>
+<body>
+  <div>
+    <h2>Registration Form</h2>
+    <form>
+      <p>Username: <input type="text"/></p>
+      <p>Email: <input type="text" id="email" onchange="emailTest()"/></p>
+      <p>Password: <input type="password"/></p>
+      <input type="submit" value="Create User" />
+    </form>
+  </div>
+</body>
+</html>
