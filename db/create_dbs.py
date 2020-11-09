@@ -27,14 +27,14 @@ admin_list = [
 admin_col.insert_many(admin_list)
 
 
-# docker run -it -d --rm --name postgresql -e POSTGRES_USER=dbuser -e POSTGRES_DB=testdb  -e POSTGRES_PASSWORD=guest -p 5432:5432 -v $HOME/docker/volumes/postgres:/var/lib/postgresql/data  postgres
-import psycopg2
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+# # docker run -it -d --rm --name postgresql -e POSTGRES_USER=dbuser -e POSTGRES_DB=testdb  -e POSTGRES_PASSWORD=guest -p 5432:5432 -v $HOME/docker/volumes/postgres:/var/lib/postgresql/data  postgres
+# import psycopg2
+# from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
-item_db_conn = psycopg2.connect(user = "dbuser", password = "guest",host = "localhost",port = "5432", database = "postgres")
-item_db_conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-item_db_cursor = item_db_conn.cursor()
-cursor.execute("CREATE DATABASE item_db")
+# item_db_conn = psycopg2.connect(user = "dbuser", password = "guest",host = "localhost",port = "5432", database = "postgres")
+# item_db_conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+# item_db_cursor = item_db_conn.cursor()
+# cursor.execute("CREATE DATABASE item_db")
 
 
 
