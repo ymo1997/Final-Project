@@ -19,16 +19,16 @@ class User(object):
 
     @rpc
     def register(self, username, password):
-        if isUsernameExisted(username):
+        if self.isUsernameExisted(username):
             return False, "Failed: Username exists."
-        new_record = {ID: user_col.count_documents({}), USERNAME: username, PASSWORD: password, STATUS: "valid"}
-        insert_user_db(new_record)
+        new_record = {ID: user_col.count_documents({}) + 1, USERNAME: username, PASSWORD: password, STATUS: "valid", SEX: "female", AGE: 20, CREDIT: 1000}
+        self.insert_user_db(new_record)
         return True, "Suceeded: User created."
 
     @rpc
     def validate_login(self, username, password):
-        if isUsernameExisted(username):
-            if verifyPassword(username, password):
+        if self.isUsernameExisted(username):
+            if self.verifyPassword(username, password):
                 return True, "Suceeded: User {} password matches.".format(username)
             else:
                 return False, "Failed: Wrong password."
@@ -51,20 +51,20 @@ class User(object):
             return True, "Suceeded: User {} is now invalid".format(username)
 
     @rpc
-    def delete_user(self, username, password, isAdmin = false):
-        if isUsernameExisted(username):
-            if verifyPassword(username, password) || isAdmin:
+    def delete_user(self, username, password, isAdmin = False):
+        if self.isUsernameExisted(username):
+            if self.verifyPassword(username, password) or isAdmin:
                 condition = {USERNAME: username}
                 if delete_user_db(condition):
                     return True, "Suceeded: User deleted."
-                else
+                else:
                     return False, "Failed: User was failed to be deleted in db."
         else:
             return False, "Failed, User doesn't exist."
 
     @rpc
     def edit_user_info(self, username, sex, age):
-        if isUsernameExisted:
+        if self.isUsernameExisted:
             condition = {USERNAME: username}
             record = user_col.find_one(condition)
             record[SEX] = sex
@@ -82,7 +82,7 @@ class User(object):
 
     def insert_user_db(self, record):
         try:
-            user_db.insert_one(record)
+            user_col.insert_one(record)
             return True
         except Exception as e:
             print("An exception occurred while insert record in db ::", e)
@@ -96,6 +96,13 @@ class User(object):
     def isUsernameExisted(self, username):
         condition = {USERNAME: username}
         return user_col.find_one(condition) is not None
+
+    
+
+def test_user():
+    service = worker_factory(User)
+
+    assert 1 + 1 == 2
 
 
 
