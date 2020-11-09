@@ -1,6 +1,14 @@
 import pymongo
 client = pymongo.MongoClient("mongodb://localhost:27017/")
 
+
+dbnames = client.list_database_names()
+
+def checkDB(dbname):
+	if dbname in dbnames:
+		client.drop_database(dbname)
+
+checkDB("user_db")
 # db for User microservice
 user_db = client["user_db"]
 user_col = user_db["user"]
@@ -14,6 +22,7 @@ user_list = [
 
 user_col.insert_many(user_list)
 
+checkDB("admin_db")
 # db for Admin microservice
 admin_db = client["admin_db"]
 admin_col = admin_db["admin"]
@@ -27,7 +36,6 @@ admin_list = [
 admin_col.insert_many(admin_list)
 
 
-# # docker run -it -d --rm --name postgresql -e POSTGRES_USER=dbuser -e POSTGRES_DB=testdb  -e POSTGRES_PASSWORD=guest -p 5432:5432 -v $HOME/docker/volumes/postgres:/var/lib/postgresql/data  postgres
 # import psycopg2
 # from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
