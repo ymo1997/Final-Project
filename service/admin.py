@@ -1,5 +1,4 @@
 from nameko.rpc import rpc, RpcProxy
-from nameko.testing.services import worker_factory
 
 class Admin(object):
 	name = "admin"

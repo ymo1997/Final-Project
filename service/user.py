@@ -55,7 +55,7 @@ class User(object):
         if self.isUsernameExisted(username):
             if self.verifyPassword(username, password) or isAdmin:
                 condition = {USERNAME: username}
-                if delete_user_db(condition):
+                if self.delete_user_db(condition):
                     return True, "Suceeded: User deleted."
                 else:
                     return False, "Failed: User was failed to be deleted in db."
@@ -77,7 +77,7 @@ class User(object):
 
 
     def delete_user_db(self, condition):
-        result = collection.delete_one(condition)
+        result = user_col.delete_one(condition)
         return result.deleted_count > 0
 
     def insert_user_db(self, record):
@@ -90,19 +90,13 @@ class User(object):
 
     def verifyPassword(self, username, password):
         condition = {USERNAME: username}
-        result = self.user_col.find_one(condition)
+        result = user_col.find_one(condition)
         return result[PASSWORD] == password
 
     def isUsernameExisted(self, username):
         condition = {USERNAME: username}
         return user_col.find_one(condition) is not None
 
-    
-
-def test_user():
-    service = worker_factory(User)
-
-    assert 1 + 1 == 2
 
 
 
