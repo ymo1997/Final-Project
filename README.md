@@ -20,7 +20,7 @@ pip install flasgger
 ```
 //  RabbitMQ
 docker run -d --hostname my-rabbit --name some-rabbit -p 15672:15672 -p 5672:5672 rabbitmq:3-management
-// MongoDB 还没弄docker，先在本地弄
+// MongoDB (Will be updated using docker)
 brew install mongodb-community@4.4
 brew services start mongodb-community@4.4
 // PostgreSQL
