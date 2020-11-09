@@ -27,7 +27,13 @@ brew services start mongodb-community@4.4
 docker run -it -d --rm --name postgresql -e POSTGRES_USER=dbuser -e POSTGRES_DB=testdb  -e POSTGRES_PASSWORD=guest -p 5432:5432 -v $HOME/docker/volumes/postgres:/var/lib/postgresql/data  postgres
 ```
 
-4. Check out API using Swagger
+4. Build Databases
+```
+cd /db
+python create_dbs.py
+```
+
+5. Check out API using Swagger
 ```
 cd /app
 python api.py
