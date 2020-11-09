@@ -40,3 +40,12 @@ python api.py
 ```
 Open http://localhost:5000/apidocs/#/ in the browser, you can see the explanations and JSON models for each API. Also you can input your own JSON to test.
 
+## Run Test for back-end
+In the back-end, we have implemented the user and admin's business logic. To test, please 
+```
+cd test
+pytest
+```
+
+## Run Test for front-end
+Please checkout \frontend for more information
