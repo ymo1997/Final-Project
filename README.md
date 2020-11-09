@@ -32,5 +32,5 @@ docker run -it -d --rm --name postgresql -e POSTGRES_USER=dbuser -e POSTGRES_DB=
 cd /app
 python api.py
 ```
-Open http://localhost:5000/apidocs/#/ in the browser, you can see the explanations and JSON models.
+Open http://localhost:5000/apidocs/#/ in the browser, you can see the explanations and JSON models for each API. Also you can input your own JSON to test.
 
