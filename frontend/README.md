@@ -1,1 +1,13 @@
-For now, I have implemented the basic html and css codes for the static pages of the auction site. Since there aren't functional javascript codes, I have wrote some javascript test codes to test some fundamental functions such as users' input, selections, and so on. For example, for the add_item.html, the javascript test code inside the html file is about verifying the selected rating. For the bid_on_item.html, the test code is to alert the bid amount that the user entered. For the login.html, the test code can test the login info. For the purchase_item.html, the test code is about verifying the correct item ID. For the registration.html, the test code can test the user email. For the remove_item.html, the test code is to test the warning about removing an item. In the next step, I will focus on javascript implementation and use some frontend frameworks like React or Angular to enhance the development of the auction site.
+# Overview
+Some basic HTML and CSS functionalities for the auction website are implemented. Some JavaScript testing codes are included to validate some fundamanetal functionalities, such as users' input, selections, and so on.
+
+# Testing
+Blow shows the instructions of some simple Javascript testings:
+- **add_item.html**: By choosing the rating score in the selector, the corresponding alert window will pop up.
+- **bid_on_item.html**: The test code is to alert the bid amount that the user entered. 
+- **login.html**: The test code can test the login info. 
+- **purchase_item.html**: The test code is about verifying the correct item ID. 
+- **registration.html**: The test code can test the user email. 
+- **remove_item.html**: The test code is to test the warning about removing an item. 
+
+Note that, for next steps, more detailed JavaScript implementation will be focused and frontend frameworks like React or Angular will be introduced to enhance the development of the auction site.
