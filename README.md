@@ -28,7 +28,7 @@ docker run -it -d --rm --name postgresql -e POSTGRES_USER=dbuser -e POSTGRES_DB=
 
 4. Populate Databases 
 ```
-cd /db
+cd db
 python create_dbs.py
 ```
 
