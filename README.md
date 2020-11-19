@@ -16,7 +16,7 @@ pip install psycopg2
 pip install flasgger
 ```
 
-3. Start Dockerized Services
+3. Start Dockerized Services for Databases
 ```
 //  RabbitMQ
 docker run -d --hostname my-rabbit --name some-rabbit -p 15672:15672 -p 5672:5672 rabbitmq:3-management
@@ -27,19 +27,36 @@ brew services start mongodb-community@4.4
 docker run -it -d --rm --name postgresql -e POSTGRES_USER=dbuser -e POSTGRES_DB=testdb  -e POSTGRES_PASSWORD=guest -p 5432:5432 -v $HOME/docker/volumes/postgres:/var/lib/postgresql/data  postgres
 ```
 
-4. Build Databases
+4. Populate Databases 
 ```
 cd /db
 python create_dbs.py
 ```
 
-5. Check out API using Swagger
+5. Checkout Mongo Databases to ensure the data has been populated
+```
+mongo
+use admin_db
+db.admin.find()
+// You should see the initial data in admin collection in the output
+use user_db
+db.user.find()
+// You should see the initial data in user collection in the output
+```
+
+5. Open and Check out API by using Swagger
 ```
 cd /app
 python api.py
 ```
 Open http://localhost:5000/apidocs/#/ in the browser, you can see the explanations and JSON models for each API. Also you can input your own JSON to test.
 
+
+6. Turn on microservices
+```
+cd ../service
+nameko run admin user
+```
 ## Run Test for back-end
 In the back-end, we have implemented the user and admin's business logic. To test, please 
 ```
