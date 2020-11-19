@@ -44,9 +44,9 @@ db.user.find()
 // You should see the initial data in user collection in the output
 ```
 
-5. Open and Check out API by using Swagger
+5. Open and Check out API by using Swagger (might be dockerized later)
 ```
-cd /app
+cd ../app
 python api.py
 ```
 Open http://localhost:5000/apidocs/#/ in the browser, you can see the explanations and JSON models for each API. Also you can input your own JSON to test.
@@ -60,7 +60,7 @@ nameko run admin user
 ## Run Test for back-end
 In the back-end, we have implemented the user and admin's business logic. To test, please 
 ```
-cd test
+cd ../test
 pytest
 ```
 
