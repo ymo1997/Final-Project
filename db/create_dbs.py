@@ -43,7 +43,7 @@ admin_col.insert_many(admin_list)
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
-# Item DB: item table / bidding table / shopping cart table
+# Item DB: item table / auction table / shopping cart table
 item_db_conn = psycopg2.connect(user = "dbuser", password = "guest",host = "localhost",port = "5432", database = "postgres")
 item_db_conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
 item_db_cursor = item_db_conn.cursor()
@@ -54,17 +54,17 @@ except:
     pass
 
 # create tables
-item_db_cursor.execute("DROP TABLE IF EXISTS bidding_log_table")
+item_db_cursor.execute("DROP TABLE IF EXISTS auction_log_table")
 item_db_cursor.execute("DROP TABLE IF EXISTS item_description_table")
 item_db_cursor.execute("DROP TABLE IF EXISTS item_table")
 item_db_cursor.execute(
                 "CREATE TABLE item_table (\
                 item_id INTEGER PRIMARY KEY, item_name VARCHAR(15) NOT NULL, seller_id INTEGER NOT NULL, buyer_id INTEGER, \
-                catagory VARCHAR(15), status VARCHAR(10) NOT NULL, bidding_start_time INTEGER NOT NULL, \
-                bidding_end_time INTEGER NOT NULL, current_bidding_price INTEGER, current_bidding_buyer_id INTEGER)")
+                catagory VARCHAR(15), status VARCHAR(10) NOT NULL, auction_start_time INTEGER NOT NULL, \
+                auction_end_time INTEGER NOT NULL, current_auction_price INTEGER, current_auction_buyer_id INTEGER)")
 item_db_cursor.execute(
-                "CREATE TABLE bidding_log_table (bidding_id INTEGER PRIMARY KEY, item_id INTEGER REFERENCES item_table(item_id), \
-                bidding_buyer_id VARCHAR(15) NOT NULL, bidding_price INTEGER NOT NULL, time_stamp INTEGER NOT NULL)")
+                "CREATE TABLE auction_log_table (auction_id INTEGER PRIMARY KEY, item_id INTEGER REFERENCES item_table(item_id), \
+                auction_buyer_id VARCHAR(15) NOT NULL, auction_price INTEGER NOT NULL, time_stamp INTEGER NOT NULL)")
 item_db_cursor.execute(
                 "CREATE TABLE item_description_table (item_id INTEGER PRIMARY KEY REFERENCES item_table(item_id), \
                 description TEXT)")

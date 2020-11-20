@@ -275,17 +275,17 @@ def login_admin_login():
     return msg, 400
 
 
-@app.route('/item-bidding-list', methods=['POST'])
-def item_bidding_list():
+@app.route('/item-auction-list', methods=['POST'])
+def item_auction_list():
     """
-    item-bidding-list API
+    item-auction-list API
     ---
     parameters:
       - name: body
         in: body
         required: true
         schema:
-          id: item-bidding-list
+          id: item-auction-list
           properties:
             status:
               type: string
@@ -297,11 +297,71 @@ def item_bidding_list():
     """
     status = request.json.get('status')
     with ClusterRpcProxy(CONFIG) as rpc:
-        result, data = rpc.bidding.list_item(status)
+        result, data = rpc.auction.list_item(status)
     if result:
         return jsonify(data), 200
     return {}, 400
 
+@app.route('/item-auction-update', methods=['POST'])
+def item_auction_update():
+    """
+    item-auction-update API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: item-auction-update
+          properties:
+            item_id:
+              type: string
+    responses:
+      200:
+        description: Succeeded - auction status is updated.
+      400:
+        description: Failed - no need to update auction status.
+    """
+    item_id = request.json.get('item_id')
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, status = rpc.auction.update_auction_status(item_id)
+    if result:
+        return status, 200
+    return status, 400
+
+
+@app.route('/item-auction-set-window', methods=['POST'])
+def item_auction_set_window():
+    """
+    item-auction-set-window API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: item-auction-set-window
+          properties:
+            item_id:
+              type: string
+            start_time:
+              type: integer
+            end_time:
+              type: integer
+    responses:
+      200:
+        description: Succeeded - set auction window.
+      400:
+        description: Failed - unable to set auction window.
+    """
+    item_id = request.json.get('item_id')
+    start_time = request.json.get('start_time')
+    end_time = request.json.get('end_time')
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, msg = rpc.auction.set_auction_window(item_id, start_time, end_time)
+    if result:
+        return msg, 200
+    return msg, 400
 
 
 

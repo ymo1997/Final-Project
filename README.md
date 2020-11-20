@@ -54,7 +54,7 @@ Open http://localhost:5000/apidocs/#/ in the browser, you can see the explanatio
 6. Turn on microservices (can be dockerized after things done)
 ```
 cd ../service
-nameko run admin user bidding
+nameko run admin user auction
 ```
 
 ## Run Test for back-end
