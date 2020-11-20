@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flasgger import Swagger
 from nameko.standalone.rpc import ClusterRpcProxy
 
@@ -244,13 +244,6 @@ def admin_user_suspend():
     return msg, 400
 
 
-
-
-
-
-
-
-
 @app.route('/login-admin-login', methods=['POST'])
 def login_admin_login():
     """
@@ -280,6 +273,34 @@ def login_admin_login():
     if result:
         return msg, 200
     return msg, 400
+
+
+@app.route('/item-bidding-list', methods=['POST'])
+def item_bidding_list():
+    """
+    item-bidding-list API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: item-bidding-list
+          properties:
+            status:
+              type: string
+    responses:
+      200:
+        description: Succeeded - user succeeded to get item list.
+      400:
+        description: Failed - user failed to get item list..
+    """
+    status = request.json.get('status')
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, data = rpc.bidding.list_item(status)
+    if result:
+        return jsonify(data), 200
+    return {}, 400
 
 
 
