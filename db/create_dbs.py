@@ -69,6 +69,10 @@ item_db_cursor.execute(
                 "CREATE TABLE item_description_table (item_id INTEGER PRIMARY KEY REFERENCES item_table(item_id), \
                 description TEXT)")
 
+item_db_cursor.execute(
+                "CREATE TABLE shopping_cart_table (cart_id INTEGER PRIMARY KEY, item_id INTEGER REFERENCES item_table(item_id), \
+                buyer_id INTEGER)")
+
 # insert records
 item_db_cursor.execute("INSERT INTO item_table VALUES(111,'laptop', 123, NULL,'electronics', 'ready', 123, 456, 20, 123)")
 

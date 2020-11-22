@@ -77,6 +77,14 @@ class Auction(object):
         return True, "Succeeded"
 
 
+    @rpc
+    def add_to_cart(self, item_id, user_id, cart_id):
+        query = "INSERT INTO shopping_cart_table VALUES(%s,%s, %s)" % (cart_id, item_id, user_id)
+        item_db_cursor.execute(query)
+        return True, "Succeeded"
+
+
+
 
 
     ####### for testing/admin ######'
