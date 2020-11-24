@@ -1,0 +1,51 @@
+{% load static %}
+
+{% load crispy_forms_tags%}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Item</title>
+    <link rel="stylesheet" href="{% static 'css/material-kit.min.css' %}" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js" integrity="sha256-AdQN98MVZs44Eq2yTwtoKufhnU+uZ7v2kXnD5vqzZVo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css>"></script>
+
+  </head>
+  <body>
+    <div class="form-group bmd-form-group">
+      {{form1.as_p}}
+      {{form2.as_p}}
+      
+    </div>
+                    <div class="icon-header-item cl2 hov-cl1 trans-04 p-lr-11">
+                    <button type="button" class="btn btn-secondary btn-circle btn-md" data-toggle="modal" data-target="#exampleModalCenter"><h2>+</h2></button> 
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title text-center" id="exampleModalLongTitle">Add Item</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <form method="POST">
+                              {% csrf_token %}
+                              {{form1|crispy}}
+                              {% csrf_token %}
+                              {{form2|crispy}}
+                              <div>
+                                <button class="btn btn-primary">Submit</button>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+  </body>
+</html>
