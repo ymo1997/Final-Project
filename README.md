@@ -14,6 +14,7 @@ pip install Flask
 pip install Pymongo
 pip install psycopg2
 pip install flasgger
+pip install mailjet_rest
 ```
 
 3. Start Dockerized Services for Databases
