@@ -16,15 +16,15 @@ admin_col = admin_db.admin
 
 class Admin(object):
 
-	name = server_name
+    name = server_name
 
-	user_rpc = RpcProxy("user")
-	search_rpc = RpcProxy("search")
+    user_rpc = RpcProxy("user")
+    search_rpc = RpcProxy("search")
 
 
-	@rpc
-	def login(self, admin, password):
-		if self.check_is_admin_existed(admin):
+    @rpc
+    def login(self, admin, password):
+        if self.check_is_admin_existed(admin):
             if self.verifyPassword(admin, password):
                 return True, admin_verify_login_input_suceeded
             else:
@@ -33,33 +33,33 @@ class Admin(object):
             return False, admin_verify_login_input_failed_invalid_admin
 
 
-	@rpc
-	def suspend_user_account(self, username):
-		return self.user_rpc.suspend_account(username)
+    @rpc
+    def suspend_user_account(self, username):
+        return self.user_rpc.suspend_account(username)
 
 
-	@rpc
-	def create_user_account(self, username, password):
-		return self.user_rpc.create_account(username, password)
+    @rpc
+    def create_user_account(self, username, password):
+        return self.user_rpc.create_account(username, password)
 
 
-	@rpc
-	def delete_user_account(self, username):
-		return self.user_rpc.delete_account(username, "", True)
+    @rpc
+    def delete_user_account(self, username):
+        return self.user_rpc.delete_account(username, "", True)
 
 
-	@rpc
-	def update_user_account_info(self, username, sex, age):
-		return self.user_rpc.update_account_info(username, sex, age)
+    @rpc
+    def update_user_account_info(self, username, sex, age):
+        return self.user_rpc.update_account_info(username, sex, age)
 
 
-	# TODO	
-	@rpc
-	def search_user(self, keyword):
-		return self.search_rpc.search_user(keyword)
+    # TODO
+    @rpc
+    def search_user(self, keyword):
+        return self.search_rpc.search_user(keyword)
 
 
-	def check_is_admin_existed(self, admin):
+    def check_is_admin_existed(self, admin):
         condition = {ADMIN: admin}
         return admin_col.find_one(condition) is not None
 
