@@ -1,11 +1,8 @@
 from nameko.rpc import rpc, RpcProxy
 from pymongo import MongoClient
+from responses import *
 
-client = MongoClient('localhost:27017')
-user_db = client.user_db
-user_col = user_db.user
-
-# Data Model
+#---------- DATA MODEL ----------#
 ID = "_id"
 USERNAME = "username"
 PASSWORD = "password"
@@ -14,90 +11,127 @@ SEX = "sex"
 AGE = "age"
 CREDIT = "credit"
 
+STATUS_VALID = "valid"
+STATUS_INVALID = "invalid"
+
+NOT_FILLED = "not_filled"
+
+#---------- CONFIG ----------#
+server_name = "user"
+
+client = MongoClient('localhost:27017')
+user_db = client.user_db
+user_col = user_db.user
+
 class User(object):
-    name = "user"
+    name = server_name
+
+
+    def __init__(self):
+        self.next_new_account_id = self.get_last_id() + 1
+
 
     @rpc
-    def register(self, username, password):
-        if self.isUsernameExisted(username):
-            return False, "Failed: Username exists."
-        new_record = {ID: user_col.count_documents({}) + 1, USERNAME: username, PASSWORD: password, STATUS: "valid", SEX: "female", AGE: 20, CREDIT: 1000}
+    def create_account(self, username, password):
+        if self.check_is_username_existed(username):
+            return False, user_create_account_failed
+
+        new_record = {
+            ID: self.next_new_account_id, 
+            USERNAME: username, 
+            PASSWORD: password, 
+            STATUS: STATUS_VALID, 
+            SEX: NOT_FILLED, 
+            AGE: -1, 
+            CREDIT: 0
+        }
+
+        self.next_new_account_id += 1
         self.insert_user_db(new_record)
-        return True, "Suceeded: User created."
+
+        return True, user_create_account_suceeded
+
 
     @rpc
-    def validate_login(self, username, password):
-        if self.isUsernameExisted(username):
-            if self.verifyPassword(username, password):
-                return True, "Suceeded: User {} password matches.".format(username)
-            else:
-                return False, "Failed: Wrong password."
-        else:
-            return False, "Failed: Invalid username."
-
-    @rpc
-    def logout(self, username):
-        return True, "Suceeded: {} logout Successfully.".format(username)
-
-    @rpc
-    def suspend_user(self, username):
-        condition = {USERNAME: username}
-        record = user_col.find_one(condition)
-        record[STATUS] = 'invalid'
-        result = user_col.update_one(condition, {'$set': record})
-        if result.modified_count == 0:
-            return False, "Failed: User {} was not modified.".format(username)
-        else:
-            return True, "Suceeded: User {} is now invalid".format(username)
-
-    @rpc
-    def delete_user(self, username, password, isAdmin = False):
-        if self.isUsernameExisted(username):
-            if self.verifyPassword(username, password) or isAdmin:
-                condition = {USERNAME: username}
-                if self.delete_user_db(condition):
-                    return True, "Suceeded: User deleted."
-                else:
-                    return False, "Failed: User was failed to be deleted in db."
-        else:
-            return False, "Failed, User doesn't exist."
-
-    @rpc
-    def edit_user_info(self, username, sex, age):
-        if self.isUsernameExisted:
+    def update_account_info(self, username, sex, age):
+        if self.check_is_username_existed(username):
             condition = {USERNAME: username}
             record = user_col.find_one(condition)
             record[SEX] = sex
             record[AGE] = age
             result = user_col.update_one(condition, {'$set': record})
-            if result.modified_count == 0:
-                return False, "Failed: User info {} not changed.".format(username)
-            else:
-                return True, "Suceeded: User info {} changed".format(username)
 
+            if result.modified_count == 0:
+                return False, user_update_account_info_failed
+            else:
+                return True, user_update_account_info_suceeded
+
+
+    @rpc
+    def delete_account(self, username, password, isAdmin = False):
+        if self.check_is_username_existed(username):
+            if self.verifyPassword(username, password) or isAdmin:
+                condition = {USERNAME: username}
+                if self.delete_user_db(condition):
+                    return True, user_delete_account_suceeded
+                else:
+                    return False, user_delete_account_failed_db
+        else:
+            return False, user_delete_account_failed_not_existed
+    
+
+    @rpc
+    def suspend_account(self, username):
+        condition = {USERNAME: username}
+        record = user_col.find_one(condition)
+        record[STATUS] = STATUS_INVALID
+        result = user_col.update_one(condition, {'$set': record})
+
+        if result.modified_count == 0:
+            return False, user_suspend_account_failed
+        else:
+            return True, user_suspend_account_suceeded
+
+
+    @rpc
+    def verify_login_input(self, username, password):
+        if self.check_is_username_existed(username):
+            if self.verifyPassword(username, password):
+                return True, user_verify_login_input_suceeded
+            else:
+                return False, user_verify_login_input_failed_wrong_password
+        else:
+            return False, user_verify_login_input_failed_invalid_username
+    
 
     def delete_user_db(self, condition):
         result = user_col.delete_one(condition)
         return result.deleted_count > 0
+
 
     def insert_user_db(self, record):
         try:
             user_col.insert_one(record)
             return True
         except Exception as e:
-            print("An exception occurred while insert record in db ::", e)
+            logging.error("An exception occurred while insert record in db :: {}".format(e))
             return False
+
 
     def verifyPassword(self, username, password):
         condition = {USERNAME: username}
         result = user_col.find_one(condition)
         return result[PASSWORD] == password
 
-    def isUsernameExisted(self, username):
+
+    def check_is_username_existed(self, username):
         condition = {USERNAME: username}
         return user_col.find_one(condition) is not None
+        
 
-
-
+    def get_last_id(self):
+        last_account = user_col.find().sort('_id', -1).limit(1)
+        if last_account.count() > 0:
+            return last_account[0][ID]
 
 

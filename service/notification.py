@@ -2,7 +2,7 @@ from nameko.rpc import rpc, RpcProxy
 from mailjet_rest import Client
 
 
-mailjet = Client(auth=(api_key, api_secret), version='v3.1')
+# mailjet = Client(auth=(api_key, api_secret), version='v3.1')
 
 class Notification(object):
     name = "notification"
