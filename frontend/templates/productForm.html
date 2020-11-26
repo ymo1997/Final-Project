@@ -411,23 +411,26 @@
           Add Item
         </button>
       </form> -->
-      <form>
-        <p>Item Name: <input type="text"/></p>
-        <p>Start Price: <input type="text"/></p>
-        <p>Start Time: <input type="datetime-local"/></p>
-        <p>Expiration Time: <input type="datetime-local"/></p>
-        <p>Quantity: <input type="number"/></p>
-        <p>Shipping Costs: <input type="text"/></p>
+      <form method="POST" action="">
+      <!-- {% csrf_token %} -->
+        <p>Item Name: <input type="text" name="item_name"/></p>
+        <p>Start Price: <input type="number" step="0.01" name="start_price"/></p>
+        <p>Start Time: <input type="datetime-local" name="start_time"/></p>
+        <p>Expiration Time: <input type="datetime-local" name="expiration_time"/></p>
+        <p>Quantity: <input type="number" name="quantity"/></p>
+        <p>Shipping Costs: <input type="number" step="0.01" name="shipping_costs"/></p>
+        <p>Category: <input type="text"name="category"/></p>
         <p>Item Description: </p>
-        <textarea rows="8" cols="42"></textarea>
+        <textarea rows="8" cols="42" name="item_description"></textarea>
         <p>Seller Rating: 
-            <select>
+            <select name="seller_rating">
                 <option>--Please choose a rating--</option>
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
+                <option>Fair</option>
+                <option>Good</option>
+                <option>Very Good</option>
+                <option>Great</option>
+                <option>Excellent</option>
+                <option>Pristine</option>
             </select>
         </p>
         <label for="files">Select image</label>
@@ -439,8 +442,8 @@
         >
           Add Item
         </button>
-    </form>
+      </form>
       </div>
-      </div>
+    </div>
   </body>
 </html>
