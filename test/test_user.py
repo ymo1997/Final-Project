@@ -1,30 +1,45 @@
 import pytest
-import sys
-sys.path.append("..")
-from service.user import User
+from requests import post, get
 
-user_rpc = User()
+server_url = 'http://localhost:5000'
 
-def test_user_register():
-    test_username = "Johnson"
-    test_password = "JOHNSON"
-    result, _ = user_rpc.register(test_username, test_password)
-    assert result == True
-    result, _ = user_rpc.register(test_username, test_password)
-    assert result == False
+def test_user_create_account():
+    params = {
+        'username': 'Johnson', 
+        'password': 'JOHNSON'
+    }
+    api_url = server_url + '/user/create-account'
+
+    response = post(api_url, json = params)
+    assert response.status_code == 200
+
+    response = post(api_url, json = params)
+    assert response.status_code == 400
+
 
 def test_user_info_edit():
-    test_username = "Johnson"
-    sex = "male"
-    age = 60
-    result, _ = user_rpc.edit_user_info(test_username, sex, age)
-    assert result == True
+    params = {
+        'username': 'Johnson', 
+        'sex': 'male',
+        'age': 60
+    }
+    api_url = server_url + '/user/update-account-info'
+
+    response = post(api_url, json = params)
+    assert response.status_code == 200
+
 
 def test_user_delete():
-    test_username = "Johnson"
-    test_password = "JOHNSON"
-    result, _ = user_rpc.delete_user(test_username, test_password)
-    assert result == True
-    result, _ = user_rpc.delete_user(test_username, test_password)
-    assert result == False
+    params = {
+        'username': 'Johnson', 
+        'password': 'JOHNSON'
+    }
+    api_url = server_url + '/user/delete-account'
+
+    response = post(api_url, json = params)
+    assert response.status_code == 200
+    
+    response = post(api_url, json = params)
+    assert response.status_code == 400
+
 

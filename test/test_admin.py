@@ -1,38 +1,55 @@
 import pytest
-import requests
+from requests import post, get
 
-server_address = "http://localhost:5000/"
+server_url = 'http://localhost:5000'
 
-def test_admin_user_create():
-    test_username = "Johnson"
-    test_password = "JOHNSON"
-    test_json = {"username" : test_username, "password" : test_password}
-    test_response = requests.post(server_address + "admin-user-create", json = test_json)
-    assert test_response.status_code == 200
-    test_response = requests.post(server_address + "admin-user-create", json = test_json)
-    assert test_response.status_code == 400
+def test_admin_create_user_account():
+    params = {
+        'username': 'Johnson', 
+        'password': 'JOHNSON'
+    }
+    api_url = server_url + '/admin/create-user-account'
 
-def test_admin_user_info_edit():
-    test_username = "Johnson"
-    sex = "male"
-    age = 60
-    test_json = {"username" : test_username, "sex" : sex, "age": age}
-    test_response = requests.post(server_address + "admin-user-info-edit", json = test_json)
-    assert test_response.status_code == 200
+    response = post(api_url, json = params)
+    assert response.status_code == 200
 
-def test_admin_user_suspend():
-    test_username = "Johnson"
-    test_json = {"username" : test_username}
-    test_response = requests.post(server_address + "admin-user-suspend", json = test_json)
-    assert test_response.status_code == 200
+    response = post(api_url, json = params)
+    assert response.status_code == 400
+
+
+def test_admin_update_user_account_info():
+    params = {
+        'username': 'Johnson', 
+        'sex': 'male',
+        'age': 60
+    }
+    api_url = server_url + '/admin/update-user-account-info'
+
+    response = post(api_url, json = params)
+    assert response.status_code == 200
+
+
+def test_admin_suspend_user_account():
+    params = {
+        'username': 'Johnson'
+    }
+    api_url = server_url + '/admin/suspend-user-account'
+
+    response = post(api_url, json = params)
+    assert response.status_code == 200
+
 
 def test_admin_user_delete():
-    test_username = "Johnson"
-    test_json = {"username" : test_username}
-    test_response = requests.post(server_address + "admin-user-delete", json = test_json)
-    assert test_response.status_code == 200
-    test_response = requests.post(server_address + "admin-user-delete", json = test_json)
-    assert test_response.status_code == 400
+    params = {
+        'username': 'Johnson',
+    }
+    api_url = server_url + '/admin/delete-user-account'
+
+    response = post(api_url, json = params)
+    assert response.status_code == 200
+    
+    response = post(api_url, json = params)
+    assert response.status_code == 400
 
 
 

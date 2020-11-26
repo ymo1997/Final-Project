@@ -14,12 +14,17 @@ user_delete_account_failed_not_existed = "Failed: Account is not existed."
 user_suspend_account_suceeded = "Suceeded: Account is suspended."
 user_suspend_account_failed = "Failed: Account is not suspended."
 
-user_verify_login_input_suceeded = "Suceeded: username and password match."
+user_verify_login_input_suceeded = "Suceeded: Username and password match."
 user_verify_login_input_failed_invalid_username = "Failed: Invalid username."
 user_verify_login_input_failed_wrong_password = "Failed: Wrong password."
 
 
 #---------- ADMIN -----------#
-admin_verify_login_input_suceeded = "Suceeded: admin and password match."
+admin_verify_login_input_suceeded = "Suceeded: Admin and password match."
 admin_verify_login_input_failed_invalid_admin = "Failed: Invalid admin."
 admin_verify_login_input_failed_wrong_password = "Failed: Wrong password."
+
+
+#---------- ITEM ----------#
+item_create_item_failed = "Failed: Item is not created."
+item_create_item_suceeded = "Suceeded: item is created."

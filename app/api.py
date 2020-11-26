@@ -2,21 +2,24 @@ from flask import Flask, request, jsonify
 from flasgger import Swagger
 from nameko.standalone.rpc import ClusterRpcProxy
 
+#---------- CONFIG ----------#
 app = Flask(__name__)
 Swagger(app)
 CONFIG = {'AMQP_URI': "amqp://guest:guest@localhost"}
 
-@app.route('/user-register', methods=['POST'])
-def user_register():
+
+#---------- USER APIs ----------#
+@app.route('/user/create-account', methods=['POST'])
+def user_create_account():
     """
-    user-register API
+    /user/create-account API
     ---
     parameters:
       - name: body
         in: body
         required: true
         schema:
-          id: user-register
+          id: user-create-account
           properties:
             username:
               type: string
@@ -24,59 +27,30 @@ def user_register():
               type: string
     responses:
       200:
-        description: Succeeded - user registered.
+        description: Suceeded - User is created.
       400:
-        description: Failed - user not registered.
+        description: Failed - User is existed.
     """
     username = request.json.get('username')
     password = request.json.get('password')
     with ClusterRpcProxy(CONFIG) as rpc:
-        result, msg = rpc.user.register(username, password)
+        result, msg = rpc.user.create_account(username, password)
     if result:
         return msg, 200
     return msg, 400
 
-@app.route('/user-delete', methods=['POST'])
-def user_delete():
+
+@app.route('/user/update-account-info', methods=['POST'])
+def user_update_account_info():
     """
-    user-delete API
+    /user/update-account-info API
     ---
     parameters:
       - name: body
         in: body
         required: true
         schema:
-          id: user-delete
-          properties:
-            username:
-              type: string
-            password:
-              type: string
-    responses:
-      200:
-        description: Succeeded - user was deleted.
-      400:
-        description: Failed - user was not deleted.
-    """
-    username = request.json.get('username')
-    password = request.json.get('password')
-    with ClusterRpcProxy(CONFIG) as rpc:
-        result, msg = rpc.user.delete_user(username, password)
-    if result:
-        return msg, 200
-    return msg, 400
-
-@app.route('/user-info-edit', methods=['POST'])
-def user_info_edit():
-    """
-    user-info-edit API
-    ---
-    parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          id: user-info-edit
+          id: user-update-account-info
           properties:
             username:
               type: string
@@ -86,30 +60,31 @@ def user_info_edit():
               type: integer
     responses:
       200:
-        description: Succeeded - user's info changed.
+        description: Suceeded - User info is changed.
       400:
-        description: Failed - user's info not changed.
+        description: Failed - User info is not changed.
     """
     username = request.json.get('username')
     sex = request.json.get('sex')
     age = request.json.get('age')
     with ClusterRpcProxy(CONFIG) as rpc:
-        result, msg = rpc.user.edit_user_info(username, sex, age)
+        result, msg = rpc.user.update_account_info(username, sex, age)
     if result:
         return msg, 200
     return msg, 400
 
-@app.route('/admin-user-create', methods=['POST'])
-def admin_user_create():
+
+@app.route('/user/delete-account', methods=['POST'])
+def user_delete_account():
     """
-    admin-user-create API
+    user-delete-account API
     ---
     parameters:
       - name: body
         in: body
         required: true
         schema:
-          id: admin-user-create
+          id: user-delete-account
           properties:
             username:
               type: string
@@ -117,56 +92,90 @@ def admin_user_create():
               type: string
     responses:
       200:
-        description: Succeeded - user created.
+        description: Succeeded - user is deleted.
       400:
-        description: Failed - user not created.
+        description: Failed - user is not deleted.
     """
     username = request.json.get('username')
     password = request.json.get('password')
     with ClusterRpcProxy(CONFIG) as rpc:
-        result, msg = rpc.admin.create_user(username, password)
+        result, msg = rpc.user.delete_account(username, password)
     if result:
         return msg, 200
     return msg, 400
 
-@app.route('/admin-user-delete', methods=['POST'])
-def admin_user_delete():
+
+#---------- USER APIs ----------#
+@app.route('/admin/create-user-account', methods=['POST'])
+def admin_create_user_account():
     """
-    admin-user-delete API
+    admin-create-user-account API
     ---
     parameters:
       - name: body
         in: body
         required: true
         schema:
-          id: admin-user-delete
+          id: admin-create-user-account
+          properties:
+            username:
+              type: string
+            password:
+              type: string
+    responses:
+      200:
+        description: Succeeded - user is created.
+      400:
+        description: Failed - user is not created.
+    """
+    username = request.json.get('username')
+    password = request.json.get('password')
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, msg = rpc.admin.create_user_account(username, password)
+    if result:
+        return msg, 200
+    return msg, 400
+
+
+@app.route('/admin/delete-user-account', methods=['POST'])
+def admin_delete_user_account():
+    """
+    admin-delete-user-account API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: admin-delete-user-account
           properties:
             username:
               type: string
     responses:
       200:
-        description: Succeeded - user deleted.
+        description: Succeeded - user is deleted.
       400:
-        description: Failed - user not deleted.
+        description: Failed - user is not deleted.
     """
     username = request.json.get('username')
     with ClusterRpcProxy(CONFIG) as rpc:
-        result, msg = rpc.admin.delete_user(username)
+        result, msg = rpc.admin.delete_user_account(username)
     if result:
         return msg, 200
     return msg, 400
 
-@app.route('/admin-user-info-edit', methods=['POST'])
-def admin_user_info_edit():
+
+@app.route('/admin/update-user-account-info', methods=['POST'])
+def admin_update_user_account_info():
     """
-    admin-user-info-edit API
+    admin-update-user-account-info API
     ---
     parameters:
       - name: body
         in: body
         required: true
         schema:
-          id: admin-user-info-edit
+          id: admin-update-user-account-info
           properties:
             username:
               type: string
@@ -176,19 +185,101 @@ def admin_user_info_edit():
               type: integer
     responses:
       200:
-        description: Succeeded - user info changed.
+        description: Succeeded - user info is changed.
       400:
-        description: Failed - user info not changed.
+        description: Failed - user info is not changed.
     """
     username = request.json.get('username')
     sex = request.json.get('sex')
     age = request.json.get('age')
     with ClusterRpcProxy(CONFIG) as rpc:
-        result, msg = rpc.admin.edit_user_info(username, sex, age)
+        result, msg = rpc.admin.update_user_account_info(username, sex, age)
     if result:
         return msg, 200
     return msg, 400
 
+
+@app.route('/admin/suspend-user-account', methods=['POST'])
+def admin_suspend_user_account():
+    """
+    admin-suspend-user-account API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: admin-suspend-user-account
+          properties:
+            username:
+              type: string
+    responses:
+      200:
+        description: Succeeded - user is suspended.
+      400:
+        description: Failed - user is not suspended.
+    """
+    username = request.json.get('username')
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, msg = rpc.admin.suspend_user_account(username)
+    if result:
+        return msg, 200
+    return msg, 400
+
+
+#---------- ITEM APIs ----------#
+@app.route('/item/create-item', methods=['POST'])
+def item_create_item():
+    """
+    item-create-item API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: admin-suspend-user-account
+          properties:
+            item_name:
+              type: string
+            seller_id:
+              type: integer
+            category_name:
+              type: string
+            description:
+              type: string
+            auction_start_time:
+              type: integer
+            auction_end_time:
+              type: integer
+            starting_price:
+              type: float
+    responses:
+      200:
+        description: Succeeded - item is created.
+      400:
+        description: Failed - item is not created.
+    """
+    item_name = request.json.get('item_name')
+    seller_id = request.json.get('seller_id')
+    category_name = request.json.get('category_name')
+    description = request.json.get('description')
+    auction_start_time = request.json.get('auction_start_time')
+    auction_end_time = request.json.get('auction_end_time')
+    starting_price = request.json.get('starting_price')
+
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, msg = rpc.item.create_item(item_name, 
+        seller_id, category_name, description, 
+        auction_start_time, auction_end_time,
+        starting_price)
+    if result:
+        return msg, 200
+    return msg, 400
+
+
+
+# TODO
 @app.route('/admin-user-query', methods=['POST'])
 def admin_user_query():
     """
@@ -216,34 +307,11 @@ def admin_user_query():
         return msg, 200
     return msg, 400
 
-@app.route('/admin-user-suspend', methods=['POST'])
-def admin_user_suspend():
-    """
-    admin-user-suspend API
-    ---
-    parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          id: admin-user-suspend
-          properties:
-            username:
-              type: string
-    responses:
-      200:
-        description: Succeeded - user suspended.
-      400:
-        description: Failed - user not suspended.
-    """
-    username = request.json.get('username')
-    with ClusterRpcProxy(CONFIG) as rpc:
-        result, msg = rpc.admin.suspend_user(username)
-    if result:
-        return msg, 200
-    return msg, 400
 
 
+
+
+# TODO
 @app.route('/login-admin-login', methods=['POST'])
 def login_admin_login():
     """
