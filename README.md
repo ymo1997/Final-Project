@@ -33,7 +33,7 @@ cd db
 python create_dbs.py
 ```
 
-5. Checkout Mongo Databases to ensure the data has been populated
+5. Checkout Databases to ensure the data has been populated
 ```
 docker exec -it mongodb /bin/bash
 mongo
@@ -43,6 +43,13 @@ db.admin.find()
 use user_db
 db.user.find()
 // You should see the initial data in user collection in the output
+```
+
+```
+docker exec -it postgresql /bin/bash
+psql -U dbuser -d postgres -h localhost
+\d
+select * from item_table;
 ```
 
 5. Open and Check out API by using Swagger (might be dockerized later)
