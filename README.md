@@ -62,7 +62,7 @@ Open http://localhost:5000/apidocs/#/ in the browser, you can see the explanatio
 6. Turn on microservices (can be dockerized on a container after things done)
 ```
 cd ../service
-nameko run user admin item auction shopping_cart
+nameko run user admin item auction shopping_cart login search notification
 ```
 
 ## Run Test for back-end
