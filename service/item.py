@@ -176,6 +176,53 @@ class item(object):
         returned_data[MESSAGE] = item_create_category_suceeded
         return True, returned_data
 
+
+    @rpc
+    def delete_category(self, category_id):
+        self.update_all_auctions_status()
+        params = (category_id)
+        query = """DELETE FROM category WHERE category_id = %d""" % category_id
+
+        if try_execute_sql(cursor, query, __name__):
+            return True, item_delete_category_failed
+        else:
+            return False, item_delete_category_suceeded
+
+
+    @rpc
+    def modify_category(self, category_id, category_name):
+        self.update_all_auctions_status()
+        params = (category_name, category_id)
+        query = """UPDATE category SET category_name = '%s' \
+            WHERE category_id = %d""" % params
+
+        if try_execute_sql(cursor, query, __name__):
+            return True, item_update_category_failed
+        else:
+            return False, item_update_category_suceeded
+
+
+    @rpc
+    def list_categories(self):
+        self.update_all_auctions_status()
+        returned_data = {"category_list": [], MESSAGE: None}
+        query = """SELECT * FROM category"""
+
+        if try_execute_sql(cursor, query, __name__):
+            records = cursor.fetchall()
+            for record in records:
+                temp_dict = {}
+                temp_dict[CATEGORY_ID] = record[0]
+                temp_dict[CATEGORY_NAME] = record[1]
+                returned_data["category_list"].append(temp_dict.copy())
+
+            returned_data[MESSAGE] = item_list_categories_failed
+            return True, returned_data
+        else:
+            returned_data[MESSAGE] = item_list_categories_suceeded
+            return False, returned_data
+
+
     
     @rpc
     def update_item_with_bid(self, auction_id, auction_user_id, item_id, auction_price, auction_time):
@@ -281,10 +328,13 @@ class item(object):
         self.update_all_auctions_status()
         returned_data = {"item_list": [], MESSAGE: None}
         if status is None:
-            query = """SELECT * FROM item;"""
+            query = """SELECT * FROM \
+            (item INNER JOIN category ON item.category_id = category.category_id);"""
         else:
             params = (status)
-            query = """SELECT * FROM item WHERE status = '%s';""" % params
+            query = """SELECT * FROM \
+            (item INNER JOIN category ON item.category_id = category.category_id) \
+            WHERE status = '%s';""" % params
 
         try:
             cursor.execute(query)
@@ -306,6 +356,24 @@ class item(object):
         
         returned_data[MESSAGE] = item_list_item_suceeded
         return True, returned_data
+
+
+    @rpc
+    def stop_item_auction(self, item_id):
+        self.update_all_auctions_status()
+        params = (item_id)
+        query = """SELECT status FROM item WHERE item_id = %d;""" % params
+        if try_execute_sql(cursor, query, __name__):
+            record = cursor.fetchone()
+            status = record[0]
+            if status == ITEM_STATUS_ON_GOING:
+                params = (ITEM_STATUS_COMPLETED, datetime.now().timestamp(), item_id)
+                query = """UPDATE item SET status = '%s', auction_end_time = %d \
+                WHERE item_id = %d""" % params
+                if try_execute_sql(cursor, query, __name__):
+                    return True, item_stop_item_auction_suceeded
+        else:
+            return False, item_stop_item_auction_failed
 
 
     def update_all_auctions_status(self):

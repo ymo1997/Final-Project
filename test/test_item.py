@@ -7,17 +7,42 @@ server_url = 'http://localhost:5000'
 def pytest_namespace():
     return {
         'newly_created_item_id': None,
+        'newly_created_on_going_item_id': None,
         'newly_created_category_id': None
         }
 
 
 def test_item_create_item():
-    params = {'description': 'b', 'item_name': 'a', 'seller_id': 0, 'starting_price': '0.0', 'auction_start_time': 1606432462, 'auction_end_time': 1606583144, 'category_id': 9}
+    params = {
+        'description': 'This pair of Chinese republic period miniature porcelain vases',
+        'item_name': 'Pair Chinese Republic', 
+        'seller_id': 2, 
+        'starting_price': 500.0, 
+        'auction_start_time': 1606432462, 
+        'auction_end_time': 1606583144, 
+        'category_id': 9
+        }
 
     api_url = server_url + '/item/create-item'
 
     response = post(api_url, json = params)
     pytest.newly_created_item_id = response.json()["item_id"]
+    assert response.status_code == 200
+
+    params = {
+        'description': 'Porcelain vases',
+        'item_name': 'Pair England Republic', 
+        'seller_id': 2, 
+        'starting_price': 500.0, 
+        'auction_start_time': 1606511730, 
+        'auction_end_time': 1626583144, 
+        'category_id': 9
+        }
+
+    api_url = server_url + '/item/create-item'
+
+    response = post(api_url, json = params)
+    pytest.newly_created_on_going_item_id = response.json()["item_id"]
     assert response.status_code == 200
 
 
@@ -48,6 +73,25 @@ def test_item_update_item_info():
     assert response.status_code == 200
 
 
+def test_item_modify_category():
+    params = {
+        'category_id' : pytest.newly_created_category_id,
+        'category_name' : 'Art Deco'
+    }
+    api_url = server_url + '/item/modify-category'
+
+    response = post(api_url, json = params)
+    assert response.status_code == 200
+
+
+def test_item_list_category():
+    api_url = server_url + '/item/list-category'
+
+    response = get(api_url)
+    assert response.status_code == 200
+    assert response.json()['category_list'][-1]['category_name'] == 'Art Deco'
+
+
 def test_item_get_item_info():
     params = {
         'item_id': pytest.newly_created_item_id
@@ -74,6 +118,16 @@ def test_item_report_item():
     assert response.status_code == 200
 
 
+def test_item_stop_item_auction():
+    params = {
+        'item_id': pytest.newly_created_on_going_item_id
+    }
+
+    api_url = server_url + '/item/stop-item-auction'
+    response = get(api_url, params = params)
+    assert response.status_code == 200
+
+
 def test_item_delete_item():
     params = {
         'item_id': pytest.newly_created_item_id
@@ -90,6 +144,25 @@ def test_item_delete_item():
     api_url = server_url + '/item/delete-item'
     response = post(api_url, json = params)
     assert response.status_code == 400
+
+    params = {
+        'item_id': pytest.newly_created_on_going_item_id
+    }
+
+    api_url = server_url + '/item/delete-item'
+    response = post(api_url, json = params)
+    assert response.status_code == 200
+
+
+def test_item_delete_category():
+    params = {
+        'category_id' : pytest.newly_created_category_id
+    }
+    api_url = server_url + '/item/delete-category'
+
+    response = get(api_url, params = params)
+    assert response.status_code == 200
+
 
 def test_item_list_user_auctioning():
     params = {

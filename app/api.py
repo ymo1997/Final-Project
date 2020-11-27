@@ -314,6 +314,7 @@ def admin_delete_admin_account():
     return msg, 400
 
 
+
 #---------- ITEM APIs ----------#
 @app.route('/item/create-item', methods=['POST'])
 def item_create_item():
@@ -527,9 +528,9 @@ def item_create_category():
               type: string
     responses:
       200:
-        description: Succeeded - item is reported.
+        description: Succeeded - category is created.
       400:
-        description: Failed - item is not reported.
+        description: Failed - category is not created.
       data:
         description: Keys - category_id, msg
 
@@ -541,6 +542,96 @@ def item_create_category():
     if result:
         return jsonify(data), 200
     return jsonify(data), 400
+
+
+@app.route('/item/delete-category', methods=['GET'])
+def item_delete_category():
+    """
+    item-delete-category API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: item_delete_category
+          properties:
+            category_id:
+              type: integer
+    responses:
+      200:
+        description: Succeeded - category is deleted.
+      400:
+        description: Failed - category is not deleted.
+
+    """
+    category_id = int(request.args.get('category_id'))
+
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, msg = rpc.item.delete_category(category_id)
+    if result:
+        return msg, 200
+    return msg, 400
+
+
+@app.route('/item/modify-category', methods=['POST'])
+def item_modify_category():
+    """
+    item-modify-category API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: item_modify_category
+          properties:
+            category_id:
+              type: integer
+            category_name:
+              type: string
+    responses:
+      200:
+        description: Succeeded - category is modified.
+      400:
+        description: Failed - category is not modified.
+
+    """
+    category_id = request.json.get('category_id')
+    category_name = request.json.get('category_name')
+
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, msg = rpc.item.modify_category(category_id, category_name)
+    if result:
+        return msg, 200
+    return msg, 400
+
+
+@app.route('/item/list-category', methods=['GET'])
+def item_list_category():
+    """
+    item-list-category API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: item_list_category
+          properties:
+    responses:
+      200:
+        description: Succeeded - category list is retrieved.
+      400:
+        description: Failed - category is not retrieved.
+
+    """
+
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, data = rpc.item.list_categories()
+    if result:
+        return data, 200
+    return data, 400
 
 
 @app.route('/item/list-user-auctioning', methods=['POST'])
@@ -605,6 +696,35 @@ def item_list_items():
     if result:
         return jsonify(data), 200
     return jsonify(data), 400
+
+
+@app.route('/item/stop-item-auction', methods=['GET'])
+def item_stop_item_auction():
+    """
+    item-stop-item-auction API 
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: item-stop-item-auction
+          properties:
+            item_id:
+              type: integer
+    responses:
+      200:
+        description: Succeeded - item auction is stopped.
+      400:
+        description: Failed - item auction is not stopped.
+    """
+    item_id = request.args.get("item_id")
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, msg = rpc.item.stop_item_auction(int(item_id))
+    if result:
+        return msg, 200
+    return msg, 400
+
 
 
 #---------- AUCTION APIs ----------#

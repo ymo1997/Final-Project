@@ -67,8 +67,17 @@ item_get_item_info_suceeded = "Suceeded: Item info is retrieved."
 item_report_item_failed = "Failed: Item info is not reported."
 item_report_item_suceeded = "Suceeded: Item info is reported."
 
-item_create_category_failed = "Failed: Item is not created."
-item_create_category_suceeded = "Suceeded: Item is created."
+item_create_category_failed = "Failed: category is not created."
+item_create_category_suceeded = "Suceeded: category is created."
+
+item_update_category_failed = "Failed: category is not updated."
+item_update_category_suceeded = "Suceeded: category is updated."
+
+item_delete_category_failed = "Failed: category is not deleted."
+item_delete_category_suceeded = "Suceeded: category is deleted."
+
+item_list_categories_failed = "Failed: category list is not retrieved."
+item_list_categories_suceeded = "Suceeded: category list is not retrieved."
 
 item_update_item_with_bid_failed_db = "Failed: Item auction info is not updated due to database query."
 item_update_item_with_bid_failed_status = "Failed: Item auction info is not updated due to item status."
@@ -80,6 +89,9 @@ item_list_user_auctioning_suceeded = "Suceeded: User's auctioning info is retrie
 
 item_list_item_failed = "Failed: list is not retrieved."
 item_list_item_suceeded = "Suceeded: list info is retrieved."
+
+item_stop_item_auction_failed = "Failed: Item auction is not stopped."
+item_stop_item_auction_suceeded = "Suceeded: Item auction is stopped."
 
 
 #---------- AUCTION ----------#
