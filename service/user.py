@@ -25,6 +25,7 @@ user_col = user_db.user
 
 class User(object):
     name = server_name
+    shopping_cart_rpc = RpcProxy("shopping_cart")
 
 
     def __init__(self):
@@ -46,9 +47,10 @@ class User(object):
             CREDIT: 0
         }
 
-        self.next_new_account_id += 1
         self.insert_user_db(new_record)
 
+        self.shopping_cart_rpc.create_user_shopping_cart(self.next_new_account_id)
+        self.next_new_account_id += 1
         return True, user_create_account_suceeded
 
 
@@ -70,9 +72,11 @@ class User(object):
     @rpc
     def delete_account(self, username, password, isAdmin = False):
         if self.check_is_username_existed(username):
-            if self.verifyPassword(username, password) or isAdmin:
+            account_id = self.get_account_id(username)
+            if self.verify_password(username, password) or isAdmin:
                 condition = {USERNAME: username}
                 if self.delete_user_db(condition):
+                    self.shopping_cart_rpc.delete_user_shopping_cart(account_id)
                     return True, user_delete_account_suceeded
                 else:
                     return False, user_delete_account_failed_db
@@ -96,7 +100,7 @@ class User(object):
     @rpc
     def verify_login_input(self, username, password):
         if self.check_is_username_existed(username):
-            if self.verifyPassword(username, password):
+            if self.verify_password(username, password):
                 return True, user_verify_login_input_suceeded
             else:
                 return False, user_verify_login_input_failed_wrong_password
@@ -118,10 +122,16 @@ class User(object):
             return False
 
 
-    def verifyPassword(self, username, password):
+    def verify_password(self, username, password):
         condition = {USERNAME: username}
         result = user_col.find_one(condition)
         return result[PASSWORD] == password
+
+
+    def get_account_id(self, username):
+        condition = {USERNAME: username}
+        result = user_col.find_one(condition)
+        return result[ID]
 
 
     def check_is_username_existed(self, username):

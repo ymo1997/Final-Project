@@ -153,7 +153,7 @@ class item(object):
     def report_item(self, item_id):
         self.update_all_auctions_status()
         params = (ITEM_STATUS_REPORTED, item_id)
-        result = update_item_status(params)
+        result = self.update_item_status(params)
         if result:
             return True, item_update_item_info_suceeded
         return False, item_update_item_info_failed
@@ -300,29 +300,29 @@ class item(object):
 
             if now_timestamp >= auction_start_time:
                 if now_timestamp <= auction_end_time:
-                    set_item_status_on_going(item_id, current_auction_buyer_id)
+                    self.set_item_status_on_going(item_id)
                 else:
-                    set_item_status_completed(item_id, current_auction_buyer_id)
+                    self.set_item_status_completed(item_id, current_auction_buyer_id)
 
 
     def set_item_status_on_going(self, item_id):
         params = (ITEM_STATUS_ON_GOING, item_id)
-        update_item_status(params)
+        self.update_item_status(params)
         
 
     def set_item_status_completed(self, item_id, user_id):
         params = (ITEM_STATUS_COMPLETED, item_id)
-        update_item_status(params)
+        self.update_item_status(params)
         self.shopping_cart_rpc.add_item_to_user_shopping_cart(item_id, user_id)
 
         params = (user_id, item_id)
         query = "UPDATE item SET buyer_id = %d WHERE item_id = %d" % params
-        return try_execuate_sql(cursor, query, __name__)
-        
+        return try_execute_sql(cursor, query, __name__)
+
 
     def update_item_status(self, params):
         query = "UPDATE item SET status = '%s' WHERE item_id = %d" % params
-        return try_execuate_sql(cursor, query, __name__)
+        return try_execute_sql(cursor, query, __name__)
 
 
 
