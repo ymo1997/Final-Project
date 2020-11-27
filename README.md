@@ -33,7 +33,7 @@ cd db
 python create_dbs.py
 ```
 
-5. Checkout Databases to ensure the data has been populated
+5. Checkout Databases to ensure the data has been populated (Check if you want)
 ```
 docker exec -it mongodb /bin/bash
 mongo
@@ -59,10 +59,10 @@ python api.py
 ```
 Open http://localhost:5000/apidocs/#/ in the browser, you can see the explanations and JSON models for each API. Also you can input your own JSON to test.
 
-6. Turn on microservices (can be dockerized after things done)
+6. Turn on microservices (can be dockerized on a container after things done)
 ```
 cd ../service
-nameko run admin user auction notification
+nameko run user admin item auction shopping_cart
 ```
 
 ## Run Test for back-end
