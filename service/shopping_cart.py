@@ -56,12 +56,12 @@ class ShoppingCart(object):
             return False, shopping_cart_add_item_to_user_shopping_cart_failed
 
         try:
-            record = cursor.fetchone()[0]
+            record = loads(cursor.fetchone()[0])
+            record.append(item_id)
+            new_list = dumps(record)
         except Exception as e:
             log_for_except(__name__, e)
             return False, shopping_cart_add_item_to_user_shopping_cart_failed
-            
-        new_list = dumps(loads(record).append(item_id))
 
         params = (new_list, user_id)
         query = """UPDATE shopping_cart SET item_ids = '%s' WHERE user_id = %d;""" % params
@@ -78,10 +78,8 @@ class ShoppingCart(object):
             return False, shopping_cart_delete_item_from_user_shopping_cart_failed
 
         try:
-            print(query)
-            record = cursor.fetchone()[0]
-            print(record)
-            new_list = dumps(loads(record).remove(item_id))
+            record = loads(cursor.fetchone()[0])
+            new_list = dumps(record.remove(item_id))
         except Exception as e:
             log_for_except(__name__, e)
             return False, shopping_cart_delete_item_from_user_shopping_cart_failed
