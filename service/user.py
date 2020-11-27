@@ -110,12 +110,13 @@ class User(object):
     @rpc
     def verify_login_input(self, username, password):
         if self.check_is_username_existed(username):
+            account_id = self.get_account_id(username)
             if self.verify_password(username, password):
-                return True, user_verify_login_input_suceeded
+                return True, user_verify_login_input_suceeded, account_id
             else:
-                return False, user_verify_login_input_failed_wrong_password
+                return False, user_verify_login_input_failed_wrong_password, account_id
         else:
-            return False, user_verify_login_input_failed_invalid_username
+            return False, user_verify_login_input_failed_invalid_username, None
 
 
     @rpc

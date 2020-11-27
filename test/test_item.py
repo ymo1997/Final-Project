@@ -20,7 +20,9 @@ def test_item_create_item():
         'starting_price': 500.0, 
         'auction_start_time': 1606432462, 
         'auction_end_time': 1606583144, 
-        'category_id': 9
+        'category_id': 9,
+        'condition': 2,
+        'image_url': "https://www.flaticon.com/svg/static/icons/svg/914/914832.svg"
         }
 
     api_url = server_url + '/item/create-item'
@@ -36,7 +38,9 @@ def test_item_create_item():
         'starting_price': 500.0, 
         'auction_start_time': 1606511730, 
         'auction_end_time': 1626583144, 
-        'category_id': 9
+        'category_id': 9,
+        'condition': 2,
+        'image_url': "https://www.flaticon.com/svg/static/icons/svg/914/914832.svg"
         }
 
     api_url = server_url + '/item/create-item'
@@ -65,7 +69,9 @@ def test_item_update_item_info():
         'description': 'This pair of Chinese republic period miniature porcelain vases with flower and bird motifs painted in famille rose enamels that show a red seal on their base. ', 
         'auction_start_time': datetime(2020, 12, 3, 10, 20, 0).timestamp(), 
         'auction_end_time': datetime(2020, 12, 12, 10, 20, 0).timestamp(), 
-        'starting_price': 750
+        'starting_price': 750, 
+        'condition': 3,
+        'image_url': "https://www.flaticon.com/svg/static/icons/svg/914/914832.svg"
     }
 
     api_url = server_url + '/item/update-item-info'
@@ -106,6 +112,7 @@ def test_item_get_item_info():
     assert record["auction_start_time"] == datetime(2020, 12, 3, 10, 20, 0).timestamp()
     assert record["auction_end_time"] == datetime(2020, 12, 12, 10, 20, 0).timestamp()
     assert record["starting_price"] == 750
+    assert record["condition"] == 3
 
 
 def test_item_report_item():

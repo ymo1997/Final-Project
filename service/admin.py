@@ -33,12 +33,13 @@ class Admin(object):
     @rpc
     def verify_login_input(self, admin, password):
         if self.check_is_admin_existed(admin):
+            account_id = self.get_account_id(admin)
             if self.verify_password(admin, password):
-                return True, admin_verify_login_input_suceeded
+                return True, admin_verify_login_input_suceeded, account_id
             else:
-                return False, admin_verify_login_input_failed_wrong_password
+                return False, admin_verify_login_input_failed_wrong_password, account_id
         else:
-            return False, admin_verify_login_input_failed_invalid_admin
+            return False, admin_verify_login_input_failed_invalid_admin, None
 
     @rpc
     def create_admin_account(self, admin, password, first_name, last_name, date_joined):
@@ -110,11 +111,6 @@ class Admin(object):
         return self.user_rpc.update_account_info(username, sex, age)
 
 
-    # TODO
-    @rpc
-    def search_user(self, keyword):
-        return self.search_rpc.search_user(keyword)
-
     @rpc
     def check_is_admin_existed(self, admin):
         condition = {ADMIN: admin}
@@ -135,9 +131,17 @@ class Admin(object):
             logging.error("An exception occurred while insert record in db :: {}".format(e))
             return False 
 
+
+    def get_account_id(self, admin):
+        condition = {ADMIN: admin}
+        result = admin_col.find_one(condition)
+        return result[ID]
+
+
     def delete_admin_db(self, condition):
         result = admin_col.delete_one(condition)
         return result.deleted_count > 0
+
 
     def get_last_id(self):
         last_account = admin_col.find().sort(ID, -1).limit(1)

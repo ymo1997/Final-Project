@@ -14,10 +14,10 @@ class Login(object):
         returned_data["is_admin"] = self.admin_rpc.check_is_admin_existed(username)
 
         if returned_data["is_admin"]:
-            result, msg = self.admin_rpc.verify_login_input(username, password)
+            result, msg, account_id = self.admin_rpc.verify_login_input(username, password)
         else:
-            result, msg = self.user_rpc.verify_login_input(username, password)
-            
+            result, msg, account_id = self.user_rpc.verify_login_input(username, password)
+        returned_data["_id"] = account_id
         returned_data["msg"] = msg
         return result, returned_data
 

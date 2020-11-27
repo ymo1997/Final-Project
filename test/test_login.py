@@ -14,6 +14,7 @@ def test_login():
 
     response = post(api_url, json = params)
     assert response.status_code == 200
+    assert response.json()["_id"] == 10001
     assert response.json()["is_admin"] == True
 
     params = {
@@ -24,6 +25,7 @@ def test_login():
 
     response = post(api_url, json = params)
     assert response.status_code == 200
+    assert response.json()["_id"] == 1
     assert response.json()["is_admin"] == False
 
     params = {
@@ -34,6 +36,18 @@ def test_login():
 
     response = post(api_url, json = params)
     assert response.status_code == 400
+    assert response.json()["_id"] == 1
+    assert response.json()["is_admin"] == False
+
+    params = {
+        'email': 'ashley@mail.com',
+        'password': 'JOHN'
+    }
+    api_url = server_url + '/login/login'
+
+    response = post(api_url, json = params)
+    assert response.status_code == 400
+    assert response.json()["_id"] == None
     assert response.json()["is_admin"] == False
 
 

@@ -342,6 +342,10 @@ def item_create_item():
               type: integer
             starting_price:
               type: float
+            condition:
+              type: integer
+            image_url:
+              type: string
     responses:
       200:
         description: Succeeded - item is created.
@@ -357,12 +361,14 @@ def item_create_item():
     auction_start_time = request.json.get('auction_start_time')
     auction_end_time = request.json.get('auction_end_time')
     starting_price = request.json.get('starting_price')
+    condition = request.json.get('condition')
+    image_url = request.json.get('image_url')
 
     with ClusterRpcProxy(CONFIG) as rpc:
         result, data = rpc.item.create_item(item_name, 
         seller_id, category_id, description, 
         auction_start_time, auction_end_time,
-        starting_price)
+        starting_price, condition, image_url)
 
     if result:
         return jsonify(data), 200
@@ -424,6 +430,10 @@ def item_update_item_info():
               type: integer
             starting_price:
               type: float
+            condition:
+              type: integer
+            image_url:
+              type: string
     responses:
       200:
         description: Succeeded - item info is updated.
@@ -438,12 +448,14 @@ def item_update_item_info():
     auction_start_time = request.json.get('auction_start_time')
     auction_end_time = request.json.get('auction_end_time')
     starting_price = request.json.get('starting_price')
+    condition = request.json.get('condition')
+    image_url = request.json.get('image_url')
 
     with ClusterRpcProxy(CONFIG) as rpc:
         result, msg = rpc.item.update_item_info(
         item_id, item_name, category_id, 
         description, auction_start_time, auction_end_time,
-        starting_price)
+        starting_price, condition, image_url)
 
     if result:
         return msg, 200
@@ -624,7 +636,6 @@ def item_list_category():
         description: Succeeded - category list is retrieved.
       400:
         description: Failed - category is not retrieved.
-
     """
 
     with ClusterRpcProxy(CONFIG) as rpc:
@@ -923,7 +934,7 @@ def login_login():
       400:
         description: Failed - Not logged in.
       json:
-        description: Keys - is_admin, msg
+        description: Keys - is_admin, _id, msg
 
     """
     username = request.json.get('email')

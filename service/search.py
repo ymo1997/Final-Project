@@ -1,9 +1,16 @@
 from nameko.rpc import rpc, RpcProxy
-from pymongo import MongoClient
+import psycopg2
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+from datetime import datetime
+from responses import *
+
 
 class Search(object):
-	name = "search"
+    name = "search"
 
-	@rpc
-	def search_user(self, keyword):
-		return [], True, ""
+    item_rpc = RpcProxy("item")
+
+
+    @rpc
+    def search_item_by_keyword(self, keyword):
+        return self.item_rpc.list_items_by_keyword_on_item_name(keyword)
