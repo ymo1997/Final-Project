@@ -4,7 +4,7 @@ from responses import *
 
 #---------- DATA MODEL ----------#
 ID = "_id"
-USERNAME = "username"
+USERNAME = "email"
 PASSWORD = "password"
 STATUS = "status"
 SEX = "sex"

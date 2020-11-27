@@ -52,7 +52,6 @@ def test_bid_item():
 #     auction_rpc.change_auction_status(item_id, "ready")
 
 
-
 # def test_set_auction_window():
 #     item_id = 111
 #     result, status = auction_rpc.set_auction_window(item_id, 888, 999)

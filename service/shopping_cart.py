@@ -28,12 +28,12 @@ class ShoppingCart(object):
 
     @rpc
     def create_user_shopping_cart(self, user_id):
-        params = (user_id, "")
+        params = (user_id, "[]")
         query = """INSERT INTO shopping_cart (user_id, item_ids) VALUES (%d, '%s');""" % params
 
         if try_execute_sql(cursor, query, __name__):
             return True, shopping_cart_create_user_shopping_cart_suceeded
-        else:z
+        else:
             return False, shopping_cart_create_user_shopping_cart_failed
 
 
@@ -58,6 +58,7 @@ class ShoppingCart(object):
         try:
             record = cursor.fetchone()[0]
         except Exception as e:
+            log_for_except(__name__, e)
             return False, shopping_cart_add_item_to_user_shopping_cart_failed
             
         new_list = dumps(loads(record).append(item_id))
@@ -77,9 +78,12 @@ class ShoppingCart(object):
             return False, shopping_cart_delete_item_from_user_shopping_cart_failed
 
         try:
+            print(query)
             record = cursor.fetchone()[0]
+            print(record)
             new_list = dumps(loads(record).remove(item_id))
         except Exception as e:
+            log_for_except(__name__, e)
             return False, shopping_cart_delete_item_from_user_shopping_cart_failed
         
         params = (new_list, user_id)

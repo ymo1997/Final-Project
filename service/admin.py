@@ -4,7 +4,7 @@ from responses import *
 
 #---------- DATA MODEL ----------#
 ID = "_id"
-ADMIN = "admin"
+EMAIL = "email"
 PASSWORD = "password"
 
 #---------- CONFIG ----------#
@@ -58,14 +58,14 @@ class Admin(object):
     def search_user(self, keyword):
         return self.search_rpc.search_user(keyword)
 
-
-    def check_is_admin_existed(self, admin):
-        condition = {ADMIN: admin}
+    @rpc
+    def check_is_admin_existed(self, email):
+        condition = {EMAIL: email}
         return admin_col.find_one(condition) is not None
 
 
-    def verifyPassword(self, admin, password):
-        condition = {ADMIN: admin}
+    def verifyPassword(self, email, password):
+        condition = {EMAIL: email}
         result = admin_col.find_one(condition)
         return result[PASSWORD] == password
 

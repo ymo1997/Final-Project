@@ -4,6 +4,8 @@ def try_execute_sql(cursor, query, filename):
         cursor.execute(query)
     except Exception as e:
         log_for_except(filename, e)
+        return False
+    return True
 
 def log_for_except(filename, e):
 	logging.error("Exception in %s: %s" % (filename, e))
@@ -81,5 +83,6 @@ shopping_cart_delete_item_from_user_shopping_cart_failed = "Failed: Item is not 
 shopping_cart_delete_item_from_user_shopping_cart_suceeded = "Suceeded: Item is deleted to user's shopping cart."
 
 
+#---------- LOGIN ----------#
 
 

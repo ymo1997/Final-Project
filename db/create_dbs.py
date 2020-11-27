@@ -1,5 +1,5 @@
 #---------- MongoDB ----------#
-
+from datetime import datetime
 import pymongo
 client = pymongo.MongoClient("mongodb://localhost:27017/")
 
@@ -14,11 +14,11 @@ checkDB("user_db")
 user_db = client["user_db"]
 user_col = user_db["user"]
 user_list = [
-    {"_id": 1, "username" : "Amy", "password" : "AMY", "status" : "valid", "sex": "female", "age": 20, "credit": 40000}, 
-    {"_id": 2, "username" : "Hannah", "password" : "HANNAH", "status" : "invalid", "sex": "female", "age": 25, "credit": 45000}, 
-    {"_id": 3, "username" : "Michael", "password" : "MICHAEL", "status" : "valid", "sex": "male", "age": 30, "credit": 1000}, 
-    {"_id": 4, "username" : "Sandy", "password" : "SANDY", "status" : "valid", "sex": "female", "age": 32, "credit": 3000}, 
-    {"_id": 5, "username" : "Betty", "password" : "BETTY", "status" : "valid", "sex": "female", "age": 50, "credit": 10000}, 
+    {"_id": 1, "email": "amy@mail.com", "first_name" : "Amy", "last_name": "Jhonson", "password" : "AMY", "status" : "valid", "date_joined": datetime(2020, 10, 1).strftime('%Y-%m-%d')}, 
+    {"_id": 2, "email": "hannah@mail.com", "first_name" : "Hannah", "last_name": "Trump", "password" : "HANNAH", "status" : "invalid", "date_joined": datetime(2020, 10, 2).strftime('%Y-%m-%d')}, 
+    {"_id": 3, "email": "michael@mail.com", "first_name" : "Michael", "last_name": "Rice", "password" : "MICHAEL", "status" : "valid", "date_joined": datetime(2020, 10, 3).strftime('%Y-%m-%d')}, 
+    {"_id": 4, "email": "sandy@mail.com", "first_name" : "Sandy", "last_name": "Jhonson", "password" : "SANDY", "date_joined": datetime(2020, 10, 4).strftime('%Y-%m-%d')}, 
+    {"_id": 5, "email": "betty@mail.com", "first_name" : "Betty", "last_name": "Wilson", "password" : "BETTY", "status" : "valid", "date_joined": datetime(2020, 10, 5).strftime('%Y-%m-%d')}, 
 ]
 
 user_col.insert_many(user_list)
@@ -28,10 +28,10 @@ checkDB("admin_db")
 admin_db = client["admin_db"]
 admin_col = admin_db["admin"]
 admin_list = [
-    {"_id": 1, "admin": "Yueyang", "password" : "Zhang"}, 
-    {"_id": 2, "admin": "Anqi", "password" : "Ni"}, 
-    {"_id": 3, "admin": "Huimin", "password" : "Huang"}, 
-    {"_id": 4, "admin": "Yinghua", "password" : "Mo"}, 
+    {"_id": 1, "email": "Yueyang@mail.com", "password" : "Zhang"}, 
+    {"_id": 2, "email": "Anqi@mail.com", "password" : "Ni"}, 
+    {"_id": 3, "email": "Huimin@mail.com", "password" : "Huang"}, 
+    {"_id": 4, "email": "Yinghua@mail.com", "password" : "Mo"}, 
 ]
 
 admin_col.insert_many(admin_list)

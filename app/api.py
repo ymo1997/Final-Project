@@ -661,8 +661,40 @@ def shopping_cart_delete_item_from_user_shopping_cart():
 
 
 
+#---------- LOGIN APIs ----------#
+@app.route('/login/login', methods=['POST'])
+def login_login():
+    """
+    login-login API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: shopping-cart-add-item-to-user-shopping-cart
+          properties:
+            email:
+              type: integer
+            password:
+              type: integer
+    responses:
+      200:
+        description: Succeeded - Logged in.
+      400:
+        description: Failed - Not logged in.
+      json:
+        description: Keys - is_admin, msg
 
+    """
+    email = request.json.get('email')
+    password = request.json.get('password')
 
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, data = rpc.login.login(email, password)
+    if result:
+        return jsonify(data), 200
+    return jsonify(data), 400
 
 
 
