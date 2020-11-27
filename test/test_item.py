@@ -209,6 +209,7 @@ def test_item_list_user_auctioning():
     record = response.json()
     
     assert response.status_code == 200
+    print(record["item_list"])
     assert len(record["item_list"]) == 1
 
     params = {
@@ -220,7 +221,6 @@ def test_item_list_user_auctioning():
     
     assert response.status_code == 200
     assert len(record["item_list"]) == 3
-    print(record["item_list"])
 
     params = {
         'status': "reported"

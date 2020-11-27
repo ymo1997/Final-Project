@@ -328,11 +328,17 @@ class item(object):
         self.update_all_auctions_status()
         returned_data = {"item_list": [], MESSAGE: None}
         if status is None:
-            query = """SELECT * FROM \
+            query = """SELECT item_id, item_name, seller_id, buyer_id, \
+            item.category_id, category_name, description, status, auction_start_time, \
+            auction_end_time, starting_price, current_auction_price, \
+            current_auction_buyer_id FROM \
             (item INNER JOIN category ON item.category_id = category.category_id);"""
         else:
             params = (status)
-            query = """SELECT * FROM \
+            query = """SELECT item_id, item_name, seller_id, buyer_id, \
+            item.category_id, category_name, description, status, auction_start_time, \
+            auction_end_time, starting_price, current_auction_price, \
+            current_auction_buyer_id FROM \
             (item INNER JOIN category ON item.category_id = category.category_id) \
             WHERE status = '%s';""" % params
 
@@ -346,12 +352,19 @@ class item(object):
 
         for record in records:
             temp_dict = {}
-            temp_dict[AUCTION_ID] = record[0]
-            temp_dict[AUCTION_USER_ID] = record[1]
-            temp_dict[ITEM_ID] = record[2]
-            temp_dict[AUCTION_PRICE] = record[3]
-            temp_dict[AUCTION_TIME] = record[4]
-            temp_dict[STATUS] = record[5]
+            temp_dict[ITEM_ID] = record[0]
+            temp_dict[ITEM_NAME] = record[1]
+            temp_dict[SELLER_ID] = record[2]
+            temp_dict[BUYER_ID] = record[3]
+            temp_dict[CATEGORY_ID] = record[4]
+            temp_dict[CATEGORY_NAME] = record[5]
+            temp_dict[DESCRIPTION] = record[6]
+            temp_dict[STATUS] = record[7]
+            temp_dict[AUCTION_START_TIME] = record[8]
+            temp_dict[AUCTION_END_TIME] = record[9]
+            temp_dict[STARTING_PRICE] = record[10]
+            temp_dict[CURRENT_AUCTION_PRICE] = record[11]
+            temp_dict[CURRENT_AUCTION_BUYER_ID] = record[12]
             returned_data["item_list"].append(temp_dict.copy())
         
         returned_data[MESSAGE] = item_list_item_suceeded
