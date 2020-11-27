@@ -297,7 +297,7 @@ class item(object):
             auction_end_time = record[3]
             current_auction_price = record[4]
             current_auction_buyer_id = record[5]
-
+                        
             if now_timestamp >= auction_start_time:
                 if now_timestamp <= auction_end_time:
                     self.set_item_status_on_going(item_id)
@@ -313,11 +313,13 @@ class item(object):
     def set_item_status_completed(self, item_id, user_id):
         params = (ITEM_STATUS_COMPLETED, item_id)
         self.update_item_status(params)
-        self.shopping_cart_rpc.add_item_to_user_shopping_cart(item_id, user_id)
 
-        params = (user_id, item_id)
-        query = "UPDATE item SET buyer_id = %d WHERE item_id = %d" % params
-        return try_execute_sql(cursor, query, __name__)
+        if user_id is not None:
+            self.shopping_cart_rpc.add_item_to_user_shopping_cart(item_id, user_id)
+
+            params = (user_id, item_id)
+            query = "UPDATE item SET buyer_id = %d WHERE item_id = %d" % params
+            return try_execute_sql(cursor, query, __name__)
 
 
     def update_item_status(self, params):
