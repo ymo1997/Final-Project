@@ -837,7 +837,7 @@ def login_get_account_info():
         in: body
         required: true
         schema:
-          id: shopping-cart-add-item-to-user-shopping-cart
+          id: login-get-account-info
           properties:
             account_id:
               type: integer
@@ -853,7 +853,6 @@ def login_get_account_info():
     account_id = request.json.get('account_id')
     with ClusterRpcProxy(CONFIG) as rpc:
         result, data = rpc.login.get_account_info(account_id)
-        print(data)
         if 'is_admin' in data:
           if data['is_admin']:
             data['email'] = data['admin']
@@ -861,8 +860,9 @@ def login_get_account_info():
           else:
             data['email'] = data['username']
             data.pop('username')
-        data.pop('password')
+        
     if result:
+        data.pop('password')
         return jsonify(data), 200
     return jsonify(data), 400
 
