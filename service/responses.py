@@ -10,6 +10,8 @@ def try_execute_sql(cursor, query, filename):
 def log_for_except(filename, e):
 	logging.error("Exception in %s: %s" % (filename, e))
 
+#---------- RESPONSE ----------#
+MESSAGE = "msg"
 
 #---------- USER -----------#
 user_create_account_suceeded = "Suceeded: Account is created."
@@ -25,12 +27,25 @@ user_delete_account_failed_not_existed = "Failed: Account is not existed."
 user_suspend_account_suceeded = "Suceeded: Account is suspended."
 user_suspend_account_failed = "Failed: Account is not suspended."
 
+user_get_account_info_suceeded = "Suceeded: Account info is retrieved."
+user_get_account_info_failed = "Failed: Account info is not retrieved."
+
 user_verify_login_input_suceeded = "Suceeded: Username and password match."
 user_verify_login_input_failed_invalid_username = "Failed: Invalid username."
 user_verify_login_input_failed_wrong_password = "Failed: Wrong password."
 
 
 #---------- ADMIN -----------#
+admin_create_account_suceeded = "Suceeded: Account is created."
+admin_create_account_failed = "Failed: Account is existed."
+
+admin_get_account_info_suceeded = "Suceeded: Account info is retrieved."
+admin_get_account_info_failed = "Failed: Account info is not retrieved."
+
+admin_delete_admin_account_suceeded = "Suceeded: Account is deleted."
+admin_delete_admin_account_failed_db = "Failed: Account is not deleted in db."
+admin_delete_admin_account_failed_not_existed = "Failed: Account is not existed."
+
 admin_verify_login_input_suceeded = "Suceeded: Admin and password match."
 admin_verify_login_input_failed_invalid_admin = "Failed: Invalid admin."
 admin_verify_login_input_failed_wrong_password = "Failed: Wrong password."

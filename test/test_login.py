@@ -35,3 +35,65 @@ def test_login():
     response = post(api_url, json = params)
     assert response.status_code == 400
     assert response.json()["is_admin"] == False
+
+
+def test_get_account_info():
+    params = {
+        'account_id': 1
+    }
+
+    api_url = server_url + '/login/get-account-info'
+
+    response = post(api_url, json = params)
+    assert response.status_code == 200
+    assert response.json()['email'] == 'amy@mail.com'
+
+    params = {
+        'account_id': 10001
+    }
+
+    api_url = server_url + '/login/get-account-info'
+
+    response = post(api_url, json = params)
+    assert response.status_code == 200
+    assert response.json()['email'] == 'Yueyang@mail.com'
+
+
+def test_register():
+    params = {
+        'email': 'zackerburg@mail.com',
+        'password': 'Zhang', 
+        'first_name': 'a',
+        'last_name': 'b',
+        'is_admin': True
+    }
+    api_url = server_url + '/login/register'
+
+    response = post(api_url, json = params)
+    assert response.status_code == 200
+
+    params = {
+        'email': 'zackerburg@mail.com'
+    }
+    api_url = server_url + '/admin/delete-admin-account'
+    esponse = post(api_url, json = params)
+    assert response.status_code == 200
+
+    params = {
+        'email': 'zackerburg@mail.com',
+        'password': 'Zhang', 
+        'first_name': 'a',
+        'last_name': 'b',
+        'is_admin': False
+    }
+    api_url = server_url + '/login/register'
+
+    response = post(api_url, json = params)
+    assert response.status_code == 200
+    
+    params = {
+        'email': 'zackerburg@mail.com'
+    }
+    api_url = server_url + '/admin/delete-user-account'
+    esponse = post(api_url, json = params)
+    assert response.status_code == 200

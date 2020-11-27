@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flasgger import Swagger
 from nameko.standalone.rpc import ClusterRpcProxy
+from datetime import datetime
 
 #---------- CONFIG ----------#
 app = Flask(__name__)
@@ -21,7 +22,11 @@ def user_create_account():
         schema:
           id: user-create-account
           properties:
-            username:
+            email:
+              type: string
+            first_name:
+              type: string
+            last_name:
               type: string
             password:
               type: string
@@ -30,11 +35,16 @@ def user_create_account():
         description: Suceeded - User is created.
       400:
         description: Failed - User is existed.
+      json:
+        description: Keys - account_id
     """
-    username = request.json.get('username')
+    username = request.json.get('email')
+    first_name = request.json.get('first_name')
+    last_name = request.json.get('last_name')
     password = request.json.get('password')
+    date_joined = datetime.today().strftime('%Y-%m-%d')
     with ClusterRpcProxy(CONFIG) as rpc:
-        result, msg = rpc.user.create_account(username, password)
+          result, msg = rpc.user.create_account(username, password, first_name, last_name, date_joined)
     if result:
         return msg, 200
     return msg, 400
@@ -52,7 +62,7 @@ def user_update_account_info():
         schema:
           id: user-update-account-info
           properties:
-            username:
+            email:
               type: string
             sex:
               type: string
@@ -64,7 +74,7 @@ def user_update_account_info():
       400:
         description: Failed - User info is not changed.
     """
-    username = request.json.get('username')
+    username = request.json.get('email')
     sex = request.json.get('sex')
     age = request.json.get('age')
     with ClusterRpcProxy(CONFIG) as rpc:
@@ -86,7 +96,7 @@ def user_delete_account():
         schema:
           id: user-delete-account
           properties:
-            username:
+            email:
               type: string
             password:
               type: string
@@ -96,10 +106,10 @@ def user_delete_account():
       400:
         description: Failed - user is not deleted.
     """
-    username = request.json.get('username')
+    email = request.json.get('email')
     password = request.json.get('password')
     with ClusterRpcProxy(CONFIG) as rpc:
-        result, msg = rpc.user.delete_account(username, password)
+        result, msg = rpc.user.delete_account(email, password)
     if result:
         return msg, 200
     return msg, 400
@@ -122,16 +132,25 @@ def admin_create_user_account():
               type: string
             password:
               type: string
+            first_name:
+              type: string
+            last_name:
+              type: string
     responses:
       200:
-        description: Succeeded - user is created.
+        description: Suceeded - User is created.
       400:
-        description: Failed - user is not created.
+        description: Failed - User is existed.
+      json:
+        description: Keys - account_id
     """
-    username = request.json.get('username')
+    username = request.json.get('email')
     password = request.json.get('password')
+    first_name = request.json.get('first_name')
+    last_name = request.json.get('last_name')
+    date_joined = datetime.today().strftime('%Y-%m-%d')
     with ClusterRpcProxy(CONFIG) as rpc:
-        result, msg = rpc.admin.create_user_account(username, password)
+        result, msg = rpc.admin.create_user_account(username, password, first_name, last_name, date_joined)
     if result:
         return msg, 200
     return msg, 400
@@ -157,7 +176,7 @@ def admin_delete_user_account():
       400:
         description: Failed - user is not deleted.
     """
-    username = request.json.get('username')
+    username = request.json.get('email')
     with ClusterRpcProxy(CONFIG) as rpc:
         result, msg = rpc.admin.delete_user_account(username)
     if result:
@@ -177,7 +196,7 @@ def admin_update_user_account_info():
         schema:
           id: admin-update-user-account-info
           properties:
-            username:
+            email:
               type: string
             sex:
               type: string
@@ -189,7 +208,7 @@ def admin_update_user_account_info():
       400:
         description: Failed - user info is not changed.
     """
-    username = request.json.get('username')
+    username = request.json.get('email')
     sex = request.json.get('sex')
     age = request.json.get('age')
     with ClusterRpcProxy(CONFIG) as rpc:
@@ -211,7 +230,7 @@ def admin_suspend_user_account():
         schema:
           id: admin-suspend-user-account
           properties:
-            username:
+            email:
               type: string
     responses:
       200:
@@ -219,9 +238,77 @@ def admin_suspend_user_account():
       400:
         description: Failed - user is not suspended.
     """
-    username = request.json.get('username')
+    username = request.json.get('email')
     with ClusterRpcProxy(CONFIG) as rpc:
         result, msg = rpc.admin.suspend_user_account(username)
+    if result:
+        return msg, 200
+    return msg, 400
+
+
+@app.route('/admin/create-admin-account', methods=['POST'])
+def admin_create_admin_account():
+    """
+    admin-create-admin-account API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: admin-create-admin-account
+          properties:
+            email:
+              type: string
+            first_name:
+              type: string
+            last_name:
+              type: string
+            password:
+              type: string
+    responses:
+      200:
+        description: Suceeded - User is created.
+      400:
+        description: Failed - User is existed.
+      json:
+        description: Keys - account_id
+    """
+    username = request.json.get('email')
+    first_name = request.json.get('first_name')
+    last_name = request.json.get('last_name')
+    password = request.json.get('password')
+    date_joined = datetime.today().strftime('%Y-%m-%d')
+    with ClusterRpcProxy(CONFIG) as rpc:
+          result, msg = rpc.admin.create_admin_account(username, password, first_name, last_name, date_joined)
+    if result:
+        return msg, 200
+    return msg, 400
+
+
+@app.route('/admin/delete-admin-account', methods=['POST'])
+def admin_delete_admin_account():
+    """
+    admin-delete-admin-account API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: admin-delete-admin-account
+          properties:
+            email:
+              type: string
+    responses:
+      200:
+        description: Succeeded - account is deleted.
+      400:
+        description: Failed - account is not deleted.
+    """
+    username = request.json.get('email')
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, msg = rpc.admin.delete_admin_account(username)
     if result:
         return msg, 200
     return msg, 400
@@ -687,21 +774,97 @@ def login_login():
         description: Keys - is_admin, msg
 
     """
-    email = request.json.get('email')
+    username = request.json.get('email')
     password = request.json.get('password')
 
     with ClusterRpcProxy(CONFIG) as rpc:
-        result, data = rpc.login.login(email, password)
+        result, data = rpc.login.login(username, password)
     if result:
         return jsonify(data), 200
     return jsonify(data), 400
 
 
+@app.route('/login/register', methods=['POST'])
+def login_register():
+    """
+    login-register API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: login-register
+          properties:
+            email:
+              type: string
+            first_name:
+              type: string
+            last_name:
+              type: string
+            password:
+              type: string
+            is_admin:
+              type: bool
+    responses:
+      200:
+        description: Suceeded - User is created.
+      400:
+        description: Failed - User is existed.
+      json:
+        description: Keys - _id
+    """
+    username = request.json.get('email')
+    first_name = request.json.get('first_name')
+    last_name = request.json.get('last_name')
+    password = request.json.get('password')
+    date_joined = datetime.today().strftime('%Y-%m-%d')
+    is_admin = request.json.get('is_admin')
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, data = rpc.login.register(username, first_name, last_name, password, date_joined, is_admin)
+    if result:
+        return data, 200
+    return data, 400
 
 
+@app.route('/login/get-account-info', methods=['POST'])
+def login_get_account_info():
+    """
+    login-login API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: shopping-cart-add-item-to-user-shopping-cart
+          properties:
+            account_id:
+              type: integer
+    responses:
+      200:
+        description: Succeeded - Info is retrieved.
+      400:
+        description: Failed - Info is not retrieved.
+      json:
+        description: Keys - _id, email, first_name, last_name, date_joined, is_admin, msg
+    """
 
-
-
+    account_id = request.json.get('account_id')
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, data = rpc.login.get_account_info(account_id)
+        print(data)
+        if 'is_admin' in data:
+          if data['is_admin']:
+            data['email'] = data['admin']
+            data.pop('admin')
+          else:
+            data['email'] = data['username']
+            data.pop('username')
+        data.pop('password')
+    if result:
+        return jsonify(data), 200
+    return jsonify(data), 400
 
 
 

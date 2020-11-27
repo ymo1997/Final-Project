@@ -3,14 +3,22 @@ from requests import post, get
 
 server_url = 'http://localhost:5000'
 
+def pytest_namespace():
+    return {
+        'newly_created_user_id': None
+        }
+
 def test_user_create_account():
     params = {
-        'username': 'Johnson', 
-        'password': 'JOHNSON'
+        'email': 'Johnson@mail.com', 
+        'password': 'JOHNSON',
+        'first_name': 'Boris',
+        'last_name':'Johnson',
     }
     api_url = server_url + '/user/create-account'
 
     response = post(api_url, json = params)
+    pytest.newly_created_user_id = response.json()["_id"]
     assert response.status_code == 200
 
     response = post(api_url, json = params)
@@ -19,7 +27,7 @@ def test_user_create_account():
 
 def test_user_info_edit():
     params = {
-        'username': 'Johnson', 
+        'email': 'Johnson@mail.com', 
         'sex': 'male',
         'age': 60
     }
@@ -31,7 +39,7 @@ def test_user_info_edit():
 
 def test_user_delete():
     params = {
-        'username': 'Johnson', 
+        'email': 'Johnson@mail.com', 
         'password': 'JOHNSON'
     }
     api_url = server_url + '/user/delete-account'

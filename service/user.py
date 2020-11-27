@@ -4,9 +4,13 @@ from responses import *
 
 #---------- DATA MODEL ----------#
 ID = "_id"
-USERNAME = "email"
+USERNAME = "username"
 PASSWORD = "password"
 STATUS = "status"
+FIRST_NAME = "first_name"
+LAST_NAME = "last_name"
+DATE_JOINED = "date_joined"
+IS_ADMIN = "is_admin"
 SEX = "sex"
 AGE = "age"
 CREDIT = "credit"
@@ -33,25 +37,30 @@ class User(object):
 
 
     @rpc
-    def create_account(self, username, password):
+    def create_account(self, username, password, first_name, last_name, date_joined):
+        returned_data = {ID: None, MESSAGE: None}
         if self.check_is_username_existed(username):
-            return False, user_create_account_failed
+            returned_data[MESSAGE] = user_create_account_failed
+            return False, returned_data
 
         new_record = {
             ID: self.next_new_account_id, 
             USERNAME: username, 
             PASSWORD: password, 
             STATUS: STATUS_VALID, 
-            SEX: NOT_FILLED, 
-            AGE: -1, 
-            CREDIT: 0
+            FIRST_NAME: first_name, 
+            LAST_NAME: last_name, 
+            DATE_JOINED: date_joined
         }
 
         self.insert_user_db(new_record)
+        returned_data[MESSAGE] = user_create_account_suceeded
+        returned_data[ID] = self.next_new_account_id
 
         self.shopping_cart_rpc.create_user_shopping_cart(self.next_new_account_id)
         self.next_new_account_id += 1
-        return True, user_create_account_suceeded
+
+        return True, returned_data
 
 
     @rpc
@@ -67,6 +76,7 @@ class User(object):
                 return False, user_update_account_info_failed
             else:
                 return True, user_update_account_info_suceeded
+        return False, user_update_account_info_failed
 
 
     @rpc
@@ -106,6 +116,20 @@ class User(object):
                 return False, user_verify_login_input_failed_wrong_password
         else:
             return False, user_verify_login_input_failed_invalid_username
+
+
+    @rpc
+    def get_account_info(self, account_id):
+        condition = {ID: account_id}
+        returned_data = user_col.find_one(condition)
+        if returned_data is not None:
+            returned_data[IS_ADMIN] = False
+            returned_data[MESSAGE] = user_get_account_info_suceeded
+            return True, returned_data
+        else:
+            returned_data = {MESSAGE: user_get_account_info_failed}
+            return False, returned_data
+
     
 
     def delete_user_db(self, condition):
@@ -137,10 +161,14 @@ class User(object):
     def check_is_username_existed(self, username):
         condition = {USERNAME: username}
         return user_col.find_one(condition) is not None
+
+    def check_is_account_id_existed(self, account_id):
+        condition = {ID: account_id}
+        return user_col.find_one(condition) is not None
         
 
     def get_last_id(self):
-        last_account = user_col.find().sort('_id', -1).limit(1)
+        last_account = user_col.find().sort(ID, -1).limit(1)
         if last_account.count() > 0:
             return last_account[0][ID]
 
