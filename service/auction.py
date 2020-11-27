@@ -1,16 +1,76 @@
 from nameko.rpc import rpc, RpcProxy
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-import time
+from datetime import datetime
+from responses import *
 
-# Item DB: item table / auction table / shopping cart table
-item_db_conn = psycopg2.connect(user = "dbuser", password = "guest",host = "localhost",port = "5432", database = "postgres")
+#---------- DATA MODEL ----------#
+AUCTION_ID = "auction_id"
+AUCTION_USER_ID = "auction_user_id"
+ITEM_ID = "item_id"
+AUCTION_PRICE = "auction_price"
+AUCTION_TIME = "auction_time"
+STATUS = "status"
+
+STATUS_VALID = "valid"
+STATUS_INVALID = "invalid"
+
+MESSAGE = "msg"
+
+
+#---------- CONFIG ----------#
+server_name = "auction"
+
+item_db_conn = psycopg2.connect(
+    user = "dbuser", password = "guest", host = "localhost", port = "5432", database = "auction_db"
+)
 item_db_conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-item_db_cursor = item_db_conn.cursor()
+cursor = item_db_conn.cursor()
 
 
 class Auction(object):
-    name = "auction"
+    name = server_name
+
+    item_rpc = RpcProxy("item")
+
+    @rpc
+    def bid_item(self, auction_user_id, item_id, auction_price):
+        returned_data = {AUCTION_ID: None, MESSAGE: None}
+        auction_time = datetime.now().timestamp()
+
+        params = (auction_user_id, item_id, auction_price, auction_time, STATUS_INVALID)
+        query = """INSERT INTO auction (auction_user_id, item_id, \
+            auction_price, auction_time, status) \
+            VALUES (%d, %d, %f, %d, '%s') RETURNING auction_user_id;""" % params
+        try:
+            cursor.execute(query)
+            auction_id = cursor.fetchone()[0]
+            returned_data[AUCTION_ID] = auction_id
+        except Exception as e:
+            log_for_except(__name__, e)
+            returned_data[MESSAGE] = auction_bid_item_failed
+            return False, returned_data
+
+        result, msg = self.item_rpc.update_item_with_bid(auction_id, auction_user_id, item_id, auction_price, auction_time)
+        if result:
+            returned_data[MESSAGE] = auction_bid_item_suceeded
+            params = (STATUS_VALID, auction_id)
+            query = """UPDATE auction SET status = '%s' WHERE auction_id = %d""" % params
+            cursor.execute(query)
+            return True, returned_data
+        else:
+            returned_data[MESSAGE] = auction_bid_item_failed
+            return False, returned_data
+        
+
+    
+
+
+
+
+
+
+
 
     @rpc
     def list_item(self, status):
@@ -64,17 +124,7 @@ class Auction(object):
         item_db_cursor.execute(query)
         return True, "Succeeded"
 
-    @rpc
-    def increment_bidding_price(self, item_id, user_id, new_price):
-        query = "SELECT current_auction_price FROM item_table WHERE item_id = %s" %(item_id)
-        item_db_cursor.execute(query)
-        old_price = int(item_db_cursor.fetchone()[0])
-        if new_price < old_price:
-            return False, "Failed: Need to bid a higher price."
-        query = "UPDATE item_table SET current_auction_price = %s, current_auction_buyer_id = %s\
-                 WHERE item_id = '%s'" %(new_price, user_id, item_id)
-        item_db_cursor.execute(query)
-        return True, "Succeeded"
+    
 
 
     @rpc
@@ -103,7 +153,23 @@ class Auction(object):
         query = "UPDATE item_table SET status = '%s' WHERE item_id = '%s'" %(new_status, item_id)
         item_db_cursor.execute(query)
         return True, new_status
+# params = (ITEM_STATUS_READY, now_timestamp)
+#         query = "UPDATE item SET status = '%s' WHERE %d < auction_start_time" % params
+#         try:
+#             cursor.execute(query)
+#         except Exception as e:
+#             log_for_except(__name__, e)
+#             return
 
+
+
+#         params = (ITEM_STATUS_COMPLETED, now_timestamp)
+#         query = "UPDATE item SET status = '%s' WHERE %d > auction_end_time" % params
+#         try:
+#             cursor.execute(query)
+#         except Exception as e:
+#             log_for_except(__name__, e)
+#             return
 
 
 

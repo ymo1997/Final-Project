@@ -1,46 +1,67 @@
 import pytest
-import sys
-sys.path.append("..")
-from service.auction import Auction
+from datetime import datetime
+from requests import post, get
 
-auction_rpc = Auction()
+server_url = 'http://localhost:5000'
 
-def test_list_item():
-    test_status = "ready"
-    result, data = auction_rpc.list_item(test_status)
-    assert result == True
-    assert len(data) > 0
-    result, data = auction_rpc.list_item("")
-    assert result == True
-    assert len(data) == 0
+def test_bid_item():
+    params = {
+        'item_id' : 3,
+    }
+    
+    api_url = server_url + '/item/get-item-info'
+    response = post(api_url, json = params)
+    record = response.json()
+    current_auction_price = record["current_auction_price"]
+
+    params = {
+        'auction_user_id' : 5,
+        'item_id' : 3,
+        'auction_price' : current_auction_price + 100,
+    }
+
+    api_url = server_url + '/auction/bid-item'
+    response = post(api_url, json = params)
+    auction_id = response.json()["auction_id"]
+    assert response.status_code == 200
+
+    params['auction_price'] = current_auction_price + 100
+
+    api_url = server_url + '/auction/bid-item'
+    response = post(api_url, json = params)
+    auction_id = response.json()["auction_id"]
+    assert response.status_code == 400
 
 
-def test_update_auction_status():
-    item_id = 111
-    result, status = auction_rpc.update_auction_status(item_id)
-    assert result == True
-    assert status == "completed"
-    # change status back
-    auction_rpc.change_auction_status(item_id, "ready")
+# def test_list_item():
+#     test_status = "ready"
+#     result, data = auction_rpc.list_item(test_status)
+#     assert result == True
+#     assert len(data) > 0
+#     result, data = auction_rpc.list_item("")
+#     assert result == True
+#     assert len(data) == 0
+
+
+# def test_update_auction_status():
+#     item_id = 111
+#     result, status = auction_rpc.update_auction_status(item_id)
+#     assert result == True
+#     assert status == "completed"
+#     # change status back
+#     auction_rpc.change_auction_status(item_id, "ready")
 
 
 
-def test_set_auction_window():
-    item_id = 111
-    result, status = auction_rpc.set_auction_window(item_id, 888, 999)
-    assert result == True
-    result, status = auction_rpc.set_auction_window(item_id, 123, 456)
-    assert result == True
+# def test_set_auction_window():
+#     item_id = 111
+#     result, status = auction_rpc.set_auction_window(item_id, 888, 999)
+#     assert result == True
+#     result, status = auction_rpc.set_auction_window(item_id, 123, 456)
+#     assert result == True
 
 
-def test_increment_bidding_price():
-    item_id = 111
-    result, msg = auction_rpc.increment_bidding_price(item_id, 333, 1)
-    assert result == False
-    result, msg = auction_rpc.increment_bidding_price(item_id, 333, 200)
-    assert result == True
-    # change data back
-    auction_rpc.change_bidding_price(item_id, 'NULL', 20)
+
 
 
 

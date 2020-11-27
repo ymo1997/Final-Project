@@ -238,14 +238,14 @@ def item_create_item():
         in: body
         required: true
         schema:
-          id: admin-suspend-user-account
+          id: item_create_item
           properties:
             item_name:
               type: string
             seller_id:
               type: integer
-            category_name:
-              type: string
+            category_id:
+              type: integer
             description:
               type: string
             auction_start_time:
@@ -259,23 +259,422 @@ def item_create_item():
         description: Succeeded - item is created.
       400:
         description: Failed - item is not created.
+      data:
+        description: Keys - item_id, msg
     """
     item_name = request.json.get('item_name')
     seller_id = request.json.get('seller_id')
-    category_name = request.json.get('category_name')
+    category_id = request.json.get('category_id')
     description = request.json.get('description')
     auction_start_time = request.json.get('auction_start_time')
     auction_end_time = request.json.get('auction_end_time')
     starting_price = request.json.get('starting_price')
 
     with ClusterRpcProxy(CONFIG) as rpc:
-        result, msg = rpc.item.create_item(item_name, 
-        seller_id, category_name, description, 
+        result, data = rpc.item.create_item(item_name, 
+        seller_id, category_id, description, 
         auction_start_time, auction_end_time,
         starting_price)
+
+    if result:
+        return jsonify(data), 200
+    return jsonify(data), 400
+
+
+@app.route('/item/delete-item', methods=['POST'])
+def item_delete_item():
+    """
+    item-delete-item API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: item-delete-item
+          properties:
+            item_id:
+              type: integer
+    responses:
+      200:
+        description: Succeeded - item is deleted.
+      400:
+        description: Failed - item is not deleted.
+    """
+    item_id = request.json.get('item_id')
+
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, msg = rpc.item.delete_item(item_id)
     if result:
         return msg, 200
     return msg, 400
+
+
+@app.route('/item/update-item-info', methods=['POST'])
+def item_update_item_info():
+    """
+    item-update-item-info API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: item_update_item_info
+          properties:
+            item_id:
+              type: integer
+            item_name:
+              type: string
+            category_id:
+              type: integer
+            description:
+              type: string
+            auction_start_time:
+              type: integer
+            auction_end_time:
+              type: integer
+            starting_price:
+              type: float
+    responses:
+      200:
+        description: Succeeded - item info is updated.
+      400:
+        description: Failed - item info is not updated.
+    """
+    item_id = request.json.get('item_id')
+    item_name = request.json.get('item_name')
+    seller_id = request.json.get('seller_id')
+    category_id = request.json.get('category_id')
+    description = request.json.get('description')
+    auction_start_time = request.json.get('auction_start_time')
+    auction_end_time = request.json.get('auction_end_time')
+    starting_price = request.json.get('starting_price')
+
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, msg = rpc.item.update_item_info(
+        item_id, item_name, category_id, 
+        description, auction_start_time, auction_end_time,
+        starting_price)
+
+    if result:
+        return msg, 200
+    return msg, 400
+
+
+@app.route('/item/get-item-info', methods=['POST'])
+def item_get_item_info():
+    """
+    item-get-item-info API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: item_get_item_info
+          properties:
+            item_id:
+              type: integer
+    responses:
+      200:
+        description: Succeeded - item is reported.
+      400:
+        description: Failed - item is not reported.
+      data:
+        description: Keys - item_id, item_name, seller_id, buyer_id, category_id, description, status, auction_start_time, auction_end_time, starting_price, current_auction_price, current_auction_buyer_id, msg
+    """
+    item_id = request.json.get('item_id')
+
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, data = rpc.item.get_item_info(item_id)
+
+    if result:
+        return jsonify(data), 200
+    return jsonify(data), 400
+
+
+@app.route('/item/report-item', methods=['POST'])
+def item_report_item():
+    """
+    item-report-item API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: item_report_item
+          properties:
+            item_id:
+              type: integer
+    responses:
+      200:
+        description: Succeeded - item is reported.
+      400:
+        description: Failed - item is not reported.
+    """
+    item_id = request.json.get('item_id')
+
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, msg = rpc.item.report_item(item_id)
+
+    if result:
+        return msg, 200
+    return msg, 400
+
+
+@app.route('/item/create-category', methods=['POST'])
+def item_create_category():
+    """
+    item-create-category API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: item_create_category
+          properties:
+            category_name:
+              type: string
+    responses:
+      200:
+        description: Succeeded - item is reported.
+      400:
+        description: Failed - item is not reported.
+      data:
+        description: Keys - category_id, msg
+
+    """
+    category_name = request.json.get('category_name')
+
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, data = rpc.item.create_category(category_name)
+    if result:
+        return jsonify(data), 200
+    return jsonify(data), 400
+
+
+@app.route('/item/list-user-auctioning', methods=['POST'])
+def item_list_user_auctioning():
+    """
+    item-list-user-auctioning API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: item_list_user_auctioning
+          properties:
+            auction_user_id:
+              type: integer
+    responses:
+      200:
+        description: Succeeded - User's auctioning info is retrieved.
+      400:
+        description: Failed - User's auctioning info is not retrieved.
+      data:
+        description: Keys - auction_list, msg
+    """
+    auction_user_id = request.json.get('auction_user_id')
+
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, data = rpc.item.list_user_auctioning(auction_user_id)
+
+    if result:
+        return jsonify(data), 200
+    return jsonify(data), 400
+
+
+#---------- AUCTION APIs ----------#
+@app.route('/auction/bid-item', methods=['POST'])
+def auction_bid_item():
+    """
+    auction-bid-item API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: auction-bid-item
+          properties:
+            auction_user_id:
+              type: integer
+            item_id:
+              type: integer
+            auction_price:
+              type: float
+    responses:
+      200:
+        description: Succeeded - item is bid.
+      400:
+        description: Failed - item is not bid.
+      data:
+        description: Keys - auction_id, msg
+
+    """
+    auction_user_id = request.json.get('auction_user_id')
+    item_id = request.json.get('item_id')
+    auction_price = request.json.get('auction_price')
+
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, data = rpc.auction.bid_item(auction_user_id, item_id, auction_price)
+    if result:
+        return jsonify(data), 200
+    return jsonify(data), 400
+
+
+#---------- SHOPPING_CART APIs ----------#
+
+@app.route('/shopping-cart/create-user-shopping-cart', methods=['POST'])
+def shopping_cart_create_user_shopping_cart():
+    """
+    shopping-cart-create-user-shopping-cart API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: shopping-cart-create-user-shopping-cart
+          properties:
+            user_id:
+              type: integer
+    responses:
+      200:
+        description: Succeeded - User's shopping cart is created.
+      400:
+        description: Failed - User's shopping cart is not created.
+
+    """
+    user_id = request.json.get('user_id')
+
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, msg = rpc.shopping_cart.create_user_shopping_cart(user_id)
+    if result:
+        return msg, 200
+    return msg, 400
+
+
+@app.route('/shopping-cart/delete-user-shopping-cart', methods=['POST'])
+def shopping_cart_delete_user_shopping_cart():
+    """
+    shopping-cart-delete-user-shopping-cart API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: shopping-cart-delete-user-shopping-cart
+          properties:
+            user_id:
+              type: integer
+    responses:
+      200:
+        description: Succeeded - User's shopping cart is deleted.
+      400:
+        description: Failed - User's shopping cart is not deleted.
+
+    """
+    user_id = request.json.get('user_id')
+
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, msg = rpc.shopping_cart.delete_user_shopping_cart(user_id)
+    if result:
+        return msg, 200
+    return msg, 400
+
+
+@app.route('/shopping-cart/add-item-to-user-shopping-cart', methods=['POST'])
+def shopping_cart_add_item_to_user_shopping_cart():
+    """
+    shopping-cart-add-item-to-user-shopping-cart API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: shopping-cart-add-item-to-user-shopping-cart
+          properties:
+            user_id:
+              type: integer
+            item_id:
+              type: integer
+    responses:
+      200:
+        description: Succeeded - Item is added to user's cart.
+      400:
+        description: Failed - Item is not added to user's cart.
+
+    """
+    user_id = request.json.get('user_id')
+    item_id = request.json.get('item_id')
+
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, msg = rpc.shopping_cart.add_item_to_user_shopping_cart(user_id, item_id)
+    if result:
+        return msg, 200
+    return msg, 400
+
+
+@app.route('/shopping-cart/delete-item-from-user-shopping-cart', methods=['POST'])
+def shopping_cart_delete_item_from_user_shopping_cart():
+    """
+    shopping-cart-delete-item-from-user-shopping-cart API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: shopping-cart-add-item-to-user-shopping-cart
+          properties:
+            user_id:
+              type: integer
+            item_id:
+              type: integer
+    responses:
+      200:
+        description: Succeeded - Item is deleted from user's cart.
+      400:
+        description: Failed - Item is not deleted from user's cart.
+
+    """
+    user_id = request.json.get('user_id')
+    item_id = request.json.get('item_id')
+
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, msg = rpc.shopping_cart.delete_item_from_user_shopping_cart(user_id, item_id)
+    if result:
+        return msg, 200
+    return msg, 400
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
