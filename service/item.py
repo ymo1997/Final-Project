@@ -276,6 +276,38 @@ class item(object):
         return True, returned_data
 
 
+    @rpc
+    def list_items(self, status = None):
+        self.update_all_auctions_status()
+        returned_data = {"item_list": [], MESSAGE: None}
+        if status is None:
+            query = """SELECT * FROM item;"""
+        else:
+            params = (status)
+            query = """SELECT * FROM item WHERE status = '%s';""" % params
+
+        try:
+            cursor.execute(query)
+            records = cursor.fetchall()
+        except Exception as e:
+            log_for_except(__name__, e)
+            returned_data[MESSAGE] = item_list_item_failed
+            return False, returned_data
+
+        for record in records:
+            temp_dict = {}
+            temp_dict[AUCTION_ID] = record[0]
+            temp_dict[AUCTION_USER_ID] = record[1]
+            temp_dict[ITEM_ID] = record[2]
+            temp_dict[AUCTION_PRICE] = record[3]
+            temp_dict[AUCTION_TIME] = record[4]
+            temp_dict[STATUS] = record[5]
+            returned_data["item_list"].append(temp_dict.copy())
+        
+        returned_data[MESSAGE] = item_list_item_suceeded
+        return True, returned_data
+
+
     def update_all_auctions_status(self):
         now_timestamp = datetime.now().timestamp()
 

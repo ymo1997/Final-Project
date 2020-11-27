@@ -78,6 +78,9 @@ item_update_item_with_bid_suceeded = "Suceeded: Item auction info is updated."
 item_list_user_auctioning_failed = "Failed: User's auctioning info is not retrieved."
 item_list_user_auctioning_suceeded = "Suceeded: User's auctioning info is retrieved."
 
+item_list_item_failed = "Failed: list is not retrieved."
+item_list_item_suceeded = "Suceeded: list info is retrieved."
+
 
 #---------- AUCTION ----------#
 auction_bid_item_failed = "Failed: Item is not bid."

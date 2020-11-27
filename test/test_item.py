@@ -104,6 +104,61 @@ def test_item_list_user_auctioning():
     assert record["auction_list"][0]["auction_id"] == 1
     assert record["auction_list"][1]["auction_id"] == 2
 
+def test_item_list_user_auctioning():
+    params = {
+        'status': "ready"
+    }
+
+    api_url = server_url + '/item/list-items'
+    response = post(api_url, json = params)
+    record = response.json()
+    
+    assert response.status_code == 200
+    assert len(record["item_list"]) == 1
+
+    params = {
+        'status': "on-going"
+    }
+
+    api_url = server_url + '/item/list-items'
+    response = post(api_url, json = params)
+    record = response.json()
+    
+    assert response.status_code == 200
+    assert len(record["item_list"]) == 1
+
+    params = {
+        'status': "completed"
+    }
+
+    api_url = server_url + '/item/list-items'
+    response = post(api_url, json = params)
+    record = response.json()
+    
+    assert response.status_code == 200
+    assert len(record["item_list"]) == 1
+
+    params = {
+    }
+
+    api_url = server_url + '/item/list-items'
+    response = post(api_url, json = params)
+    record = response.json()
+    
+    assert response.status_code == 200
+    assert len(record["item_list"]) == 3
+    print(record["item_list"])
+
+    params = {
+        'status': "reported"
+    }
+
+    api_url = server_url + '/item/list-items'
+    response = post(api_url, json = params)
+    record = response.json()
+    
+    assert response.status_code == 200
+    assert len(record["item_list"]) == 0
 
 
 

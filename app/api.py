@@ -13,7 +13,7 @@ CONFIG = {'AMQP_URI': "amqp://guest:guest@localhost"}
 @app.route('/user/create-account', methods=['POST'])
 def user_create_account():
     """
-    /user/create-account API
+    user-create-account API
     ---
     parameters:
       - name: body
@@ -53,7 +53,7 @@ def user_create_account():
 @app.route('/user/update-account-info', methods=['POST'])
 def user_update_account_info():
     """
-    /user/update-account-info API
+    user-update-account-info API
     ---
     parameters:
       - name: body
@@ -569,6 +569,38 @@ def item_list_user_auctioning():
 
     with ClusterRpcProxy(CONFIG) as rpc:
         result, data = rpc.item.list_user_auctioning(auction_user_id)
+
+    if result:
+        return jsonify(data), 200
+    return jsonify(data), 400
+
+
+@app.route('/item/list-items', methods=['POST'])
+def item_list_items():
+    """
+    item-list-items API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: item-list-items
+          properties:
+            status:
+              type: string (Optional, if input, choose from ready, on-going, completed, reported)
+    responses:
+      200:
+        description: Succeeded - list is retrieved.
+      400:
+        description: Failed - list is not retrieved.
+      data:
+        description: Keys - item_list, msg
+    """
+    status = request.json.get('status')
+
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, data = rpc.item.list_items(status)
 
     if result:
         return jsonify(data), 200
