@@ -98,7 +98,7 @@ for category in category_list:
 initial_image_url = "https://www.flaticon.com/svg/static/icons/svg/743/743007.svg"
 item_list = [
     ("1901 $10 Bison Legal Tender Note", 1, "NULL", 5, "One 1901 $10 Bison Legal Tender Note.", "ready", 
-    datetime(2020, 11, 28, 10, 0, 0).timestamp(), datetime(2020, 11, 30, 10, 0, 0).timestamp(), 500, "NULL", "NULL", 7, initial_image_url, 0.0), 
+    datetime(2020, 12, 28, 10, 0, 0).timestamp(), datetime(2020, 12, 30, 10, 0, 0).timestamp(), 500, "NULL", "NULL", 7, initial_image_url, 0.0), 
     ("TWO JADE BI DISCS", 1, 2, 2, "The Irving Collection, New York, by 1987.", "completed", 
     datetime(2020, 11, 21, 10, 0, 0).timestamp(), datetime(2020, 11, 23, 10, 0, 0).timestamp(), 2000, 3500, 2, 2, initial_image_url, 10.0), 
     ("MID-CENTURY STYLE HIDE UPHOLSTERED ARMCHAIRS", 3, "NULL", 4, "a pair, each raised on splayed tapered legs to the fore 75 cm. high; 63 cm. wide; 65 cm. deep", "on-going", 

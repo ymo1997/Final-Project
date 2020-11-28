@@ -503,7 +503,7 @@ class item(object):
         now_timestamp = datetime.now().timestamp()
 
         query = """SELECT item_id, seller_id, auction_start_time, \
-        auction_end_time, current_auction_price, current_auction_buyer_id \
+        auction_end_time, current_auction_price, current_auction_buyer_id, status \
         FROM item"""
 
         try:
@@ -520,12 +520,15 @@ class item(object):
             auction_end_time = record[3]
             current_auction_price = record[4]
             current_auction_buyer_id = record[5]
+            status = record[6]
                         
             if now_timestamp >= auction_start_time:
                 if now_timestamp <= auction_end_time:
-                    self.set_item_status_on_going(item_id)
+                    if status != ITEM_STATUS_ON_GOING:
+                        self.set_item_status_on_going(item_id)
                 else:
-                    self.set_item_status_completed(item_id, current_auction_buyer_id)
+                    if status != ITEM_STATUS_COMPLETED:
+                        self.set_item_status_completed(item_id, current_auction_buyer_id)
 
 
     def set_item_status_on_going(self, item_id):

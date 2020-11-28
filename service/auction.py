@@ -96,6 +96,7 @@ class Auction(object):
 
 
 
+
     @rpc
     def list_item(self, status):
         query = "SELECT * FROM item_table WHERE status = '%s'" %(status)
