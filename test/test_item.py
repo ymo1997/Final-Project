@@ -149,14 +149,6 @@ def test_item_delete_item():
     assert response.status_code == 200
 
     params = {
-        'item_id': 3
-    }
-
-    api_url = server_url + '/item/delete-item'
-    response = post(api_url, json = params)
-    assert response.status_code == 400
-
-    params = {
         'item_id': pytest.newly_created_on_going_item_id
     }
 

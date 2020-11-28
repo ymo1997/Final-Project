@@ -36,6 +36,8 @@ class ShoppingCart(object):
 
     @rpc
     def create_user_shopping_cart(self, user_id):
+        self.item_rpc.update_all_auctions_status()
+
         params = (user_id, "[]")
         query = """INSERT INTO shopping_cart (user_id, item_ids) VALUES (%d, '%s');""" % params
 
@@ -47,6 +49,8 @@ class ShoppingCart(object):
 
     @rpc
     def delete_user_shopping_cart(self, user_id):
+        self.item_rpc.update_all_auctions_status()
+
         params = (user_id)
         query = """DELETE FROM shopping_cart WHERE user_id = %d;""" % params
 
@@ -79,7 +83,7 @@ class ShoppingCart(object):
     
 
     @rpc
-    def delete_item_from_user_shopping_cart(self, item_id, user_id):
+    def delete_item_from_user_shopping_cart(self, item_id, user_id):        
         params = (user_id)
         query = """SELECT item_ids FROM shopping_cart WHERE user_id = %d;""" % params
         if not try_execute_sql(cursor, query, __name__):
@@ -102,6 +106,8 @@ class ShoppingCart(object):
 
     @rpc
     def checkout_shopping_cart(self, user_id):
+        self.item_rpc.update_all_auctions_status()
+
         returned_data = {"item_list": [], MESSAGE: None}
 
         query = """SELECT item_ids FROM shopping_cart WHERE user_id = %d;""" % int(user_id)
@@ -135,6 +141,8 @@ class ShoppingCart(object):
 
     @rpc
     def list_user_shopping_cart_items(self, user_id):
+        self.item_rpc.update_all_auctions_status()
+        
         returned_data = {"item_list": [], MESSAGE: None}
         params = (user_id)
         query = """SELECT item_ids FROM shopping_cart WHERE user_id = %d;""" % params

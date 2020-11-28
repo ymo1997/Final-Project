@@ -44,7 +44,6 @@ def test_list_user_shopping_cart_items():
     assert response.status_code == 200
     
     item_list = response.json()['item_list']
-    print(response.json())
     assert len(item_list) == 2
     
     params = {
@@ -55,7 +54,6 @@ def test_list_user_shopping_cart_items():
     assert response.status_code == 200
 
     item_list = response.json()['item_list']
-    print(item_list)
     assert len(item_list) == 1
 
 

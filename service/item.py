@@ -81,11 +81,8 @@ class item(object):
     def delete_item(self, item_id):
         self.update_all_auctions_status()
         try:
-            query = """SELECT FROM auction_order WHERE item_id = %d""" % item_id
+            query = """DELETE FROM auction_order WHERE item_id = %d""" % item_id
             cursor.execute(query)
-            db_result = cursor.fetchall()
-            if len(db_result) != 0:
-                return False, item_delete_item_failed
         except Exception as e:
             log_for_except(__name__, e)
             return False, item_delete_item_failed
@@ -157,7 +154,7 @@ class item(object):
         returned_data[CONDITION] = record[13]
         returned_data[IMAGE_URL] = record[14]
         returned_data[SHIPPING_COST] = record[15]
-        returned_data[MESSAGE] = item_get_item_info_failed
+        returned_data[MESSAGE] = item_get_item_info_suceeded
 
         return True, returned_data
 
@@ -546,6 +543,7 @@ class item(object):
 
 
 
+    @rpc
     def update_all_auctions_status(self):
         now_timestamp = datetime.now().timestamp()
 

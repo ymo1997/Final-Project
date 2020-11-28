@@ -35,6 +35,7 @@ class Auction(object):
 
     @rpc
     def bid_item(self, auction_user_id, item_id, auction_price):
+        self.item_rpc.update_all_auctions_status()
         returned_data = {AUCTION_ID: None, MESSAGE: None}
         auction_time = datetime.now().timestamp()
 
@@ -65,6 +66,7 @@ class Auction(object):
 
     @rpc
     def get_auction_history(self, item_id):
+        self.item_rpc.update_all_auctions_status()
         returned_data = {MESSAGE: None, "auction_list": None}
         query = "SELECT * FROM auction WHERE item_id = %s " %(item_id)
 
