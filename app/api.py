@@ -989,7 +989,7 @@ def shopping_cart_delete_item_from_user_shopping_cart():
         in: body
         required: true
         schema:
-          id: shopping-cart-add-item-to-user-shopping-cart
+          id: shopping-cart-delete-item-to-user-shopping-cart
           properties:
             user_id:
               type: integer
@@ -1152,7 +1152,7 @@ def login_login():
         in: body
         required: true
         schema:
-          id: shopping-cart-add-item-to-user-shopping-cart
+          id: login-login
           properties:
             email:
               type: integer
