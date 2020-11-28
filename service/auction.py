@@ -50,8 +50,8 @@ class Auction(object):
             log_for_except(__name__, e)
             returned_data[MESSAGE] = auction_bid_item_failed
             return False, returned_data
-
         result, msg = self.item_rpc.update_item_with_bid(auction_id, auction_user_id, item_id, auction_price, auction_time)
+
         if result:
             returned_data[MESSAGE] = auction_bid_item_suceeded
             params = (STATUS_VALID, auction_id)
@@ -63,7 +63,6 @@ class Auction(object):
             return False, returned_data
         
 
-    
     @rpc
     def get_auction_history(self, item_id):
         returned_data = {MESSAGE: None, "auction_list": None}
@@ -75,11 +74,12 @@ class Auction(object):
             auction_list = []
             for auction_histroy in data:
                 auction_list.append({
-                    AUCTION_USER_ID: auction_histroy[0],
-                    ITEM_ID: auction_histroy[1],
-                    AUCTION_PRICE: auction_histroy[2],
+                    AUCTION_ID: auction_histroy[0],
+                    AUCTION_USER_ID: auction_histroy[1],
+                    ITEM_ID: auction_histroy[2],
                     AUCTION_PRICE: auction_histroy[3],
-                    STATUS: auction_histroy[4]})
+                    AUCTION_TIME: auction_histroy[4],
+                    STATUS: auction_histroy[5]})
 
             returned_data["auction_list"] = auction_list
 
