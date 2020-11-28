@@ -842,7 +842,7 @@ def get_auction_history():
       400:
         description: Failed - auction history is not retrieved
       data:
-        description: Keys - auction_id, msg
+        description: Keys - data, msg
 
     """
     item_id = request.args.get('item_id')
@@ -980,6 +980,38 @@ def shopping_cart_delete_item_from_user_shopping_cart():
     if result:
         return msg, 200
     return msg, 400
+
+
+@app.route('/shopping-cart/checkout-shopping-cart', methods=['GET'])
+def shopping_cart_checkout_shopping_cart():
+    """
+    checkout-shopping-cart API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: checkout-shopping-cart
+          properties:
+            user_id:
+              type: integer
+    responses:
+      200:
+        description: Succeeded - items are checked out.
+      400:
+        description: Failed - items are not checked out.
+      data:
+        description: Keys - item_list, msg
+    """
+    user_id = request.args.get('user_id')
+
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, data = rpc.shopping_cart.checkout_shopping_cart(user_id)
+
+    if result:
+        return jsonify(data), 200
+    return jsonify(data), 400
 
 
 #---------- SEARCH APIs ----------#

@@ -103,6 +103,9 @@ item_items_by_category_suceeded = "Suceeded: item searching result info is retri
 auction_bid_item_failed = "Failed: Item is not bid."
 auction_bid_item_suceeded = "Suceeded: Item is bid."
 
+auction_get_auction_history_failed = "Failed: Auction history is not retrieved."
+auction_get_auction_history_suceeded = "Suceeded: Auction history is retrieved."
+
 
 #---------- SHOPPING_CART ----------#
 shopping_cart_create_user_shopping_cart_failed = "Failed: User's shopping cart is not created."
@@ -116,6 +119,9 @@ shopping_cart_add_item_to_user_shopping_cart_suceeded = "Suceeded: Item is added
 
 shopping_cart_delete_item_from_user_shopping_cart_failed = "Failed: Item is not deleted to user's shopping cart."
 shopping_cart_delete_item_from_user_shopping_cart_suceeded = "Suceeded: Item is deleted to user's shopping cart."
+
+shopping_cart_checkout_shopping_cart_failed = "Failed: Items in shopping cart is not checked out."
+shopping_cart_checkout_shopping_cart_suceeded = "Suceeded: Items in shopping cart is checked out."
 
 
 #---------- LOGIN ----------#

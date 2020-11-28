@@ -64,7 +64,31 @@ class Auction(object):
         
 
     
+    @rpc
+    def get_auction_history(self, item_id):
+        returned_data = {MESSAGE: None, "auction_list": None}
+        query = "SELECT * FROM auction WHERE item_id = %s " %(item_id)
 
+        if try_execute_sql(cursor, query, __name__):
+            returned_data[MESSAGE] = auction_get_auction_history_suceeded
+            data = cursor.fetchall()
+            auction_list = []
+            for auction_histroy in data:
+                auction_list.append({
+                    AUCTION_USER_ID: auction_histroy[0],
+                    ITEM_ID: auction_histroy[1],
+                    AUCTION_PRICE: auction_histroy[2],
+                    AUCTION_PRICE: auction_histroy[3],
+                    STATUS: auction_histroy[4]})
+
+            returned_data["auction_list"] = auction_list
+
+            return True, returned_data
+        else:
+            returned_data[MESSAGE] = auction_get_auction_history_failed
+            return False, returned_data
+        res = cursor.fetchall() 
+        return True, res
 
 
 
@@ -134,22 +158,7 @@ class Auction(object):
         return True, "Succeeded"
 
 
-    #TODO:
-    @rpc
-    def get_auction_history(self, item_id):
-        # returned_data = {MESSAGE: None, "auction_list": None}
-        # query = "SELECT * FROM auction WHERE item_id = %s " %(item_id)
 
-        # if try_execute_query(cursor, query, __name__):
-        #     returned_data[MESSAGE] = 
-        #     returned_data["auction_list"] = cursor.fetchall()
-        #     return True, returned_data
-        # else:
-        #     returned_data[MESSAGE] = 
-        #     return False, returned_data
-        # res = cursor.fetchall() 
-        # return True, res
-        pass
 
 
 
