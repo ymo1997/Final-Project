@@ -116,7 +116,7 @@ class ShoppingCart(object):
                 item_cursor.execute(query)
                 price = item_cursor.fetchone()[0]
                 returned_data['item_list'].append({
-                    'item_id': int(item_id), 'price': int(price)
+                    'item_id': int(item_id), 'price': float(price)
                     })
             returned_data[MESSAGE] = shopping_cart_checkout_shopping_cart_suceeded
         except:
@@ -133,6 +133,23 @@ class ShoppingCart(object):
         return True, returned_data
 
 
+    @rpc
+    def list_user_shopping_cart_items(self, user_id):
+        returned_data = {"item_list": [], MESSAGE: None}
+        params = (user_id)
+        query = """SELECT item_ids FROM shopping_cart WHERE user_id = %d;""" % params
+        if not try_execute_sql(cursor, query, __name__):
+            returned_data[MESSAGE] = shopping_cart_list_user_shopping_cart_items_failed
+            return False, returned_data
+        try:
+            record = loads(cursor.fetchone()[0])
+            returned_data["item_list"] = record
+            returned_data[MESSAGE] = shopping_cart_list_user_shopping_cart_items_suceeded
+        except Exception as e:
+            log_for_except(__name__, e)
+            return False, shopping_cart_list_user_shopping_cart_items_failed
+
+        return True, returned_data
     
 
 

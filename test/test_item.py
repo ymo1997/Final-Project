@@ -238,8 +238,24 @@ def test_item_list():
     assert len(record["item_list"]) == 0
 
 
+def test_item_list_user_sell_items():
+    params = {
+        'user_id': 1
+    }
+    api_url = server_url + '/item/list-user-sell-items'
+    response = post(api_url, json = params)
+    record = response.json()
+    assert response.status_code == 200
+    assert len(record["item_list"]) == 3
 
-
+    params = {
+        'user_id': 3
+    }
+    api_url = server_url + '/item/list-user-sell-items'
+    response = post(api_url, json = params)
+    record = response.json()
+    assert response.status_code == 200
+    assert len(record["item_list"]) == 1
 
 
 

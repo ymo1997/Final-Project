@@ -146,7 +146,6 @@ def user_suspend_account():
     return msg, 400
 
 
-
 #---------- ADMIN APIs ----------#
 @app.route('/admin/create-user-account', methods=['POST'])
 def admin_create_user_account():
@@ -782,6 +781,36 @@ def item_stop_item_auction():
     return msg, 400
 
 
+@app.route('/item/list-user-sell-items', methods=['POST'])
+def item_list_user_sell_items():
+    """
+    item-list-user-sell-items API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: item-list-items
+          properties:
+            user_id:
+              type: integer
+    responses:
+      200:
+        description: Succeeded - list is retrieved.
+      400:
+        description: Failed - list is not retrieved.
+      data:
+        description: Keys - item_list, msg
+    """
+    user_id = request.json.get('user_id')
+
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, data = rpc.item.list_user_sell_items(user_id)
+
+    if result:
+        return jsonify(data), 200
+    return jsonify(data), 400
 
 #---------- AUCTION APIs ----------#
 @app.route('/auction/bid-item', methods=['POST'])
@@ -943,7 +972,7 @@ def shopping_cart_add_item_to_user_shopping_cart():
     item_id = request.json.get('item_id')
 
     with ClusterRpcProxy(CONFIG) as rpc:
-        result, msg = rpc.shopping_cart.add_item_to_user_shopping_cart(user_id, item_id)
+        result, msg = rpc.shopping_cart.add_item_to_user_shopping_cart(item_id, user_id)
     if result:
         return msg, 200
     return msg, 400
@@ -976,7 +1005,7 @@ def shopping_cart_delete_item_from_user_shopping_cart():
     item_id = request.json.get('item_id')
 
     with ClusterRpcProxy(CONFIG) as rpc:
-        result, msg = rpc.shopping_cart.delete_item_from_user_shopping_cart(user_id, item_id)
+        result, msg = rpc.shopping_cart.delete_item_from_user_shopping_cart(item_id, user_id)
     if result:
         return msg, 200
     return msg, 400
@@ -1008,6 +1037,38 @@ def shopping_cart_checkout_shopping_cart():
 
     with ClusterRpcProxy(CONFIG) as rpc:
         result, data = rpc.shopping_cart.checkout_shopping_cart(user_id)
+
+    if result:
+        return jsonify(data), 200
+    return jsonify(data), 400
+
+
+@app.route('/shopping-cart/list-user-shopping-cart-items', methods=['GET'])
+def shopping_cart_list_user_shopping_cart_items():
+    """
+    list-user-shopping-cart-items API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: checkout-shopping-cart
+          properties:
+            user_id:
+              type: integer
+    responses:
+      200:
+        description: Succeeded - user's shopping cart item list is retrieved.
+      400:
+        description: Failed - user's shopping cart item list is retrieved.
+      data:
+        description: Keys - item_list, msg
+    """
+    user_id = int(request.args.get('user_id'))
+
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, data = rpc.shopping_cart.list_user_shopping_cart_items(user_id)
 
     if result:
         return jsonify(data), 200
