@@ -239,12 +239,12 @@ class item(object):
     @rpc
     def update_item_with_bid(self, auction_id, auction_user_id, item_id, auction_price, auction_time):
         self.update_all_auctions_status()
-        query = "SELECT current_auction_price, status FROM item WHERE item_id = %s" % (item_id)
+        query = "SELECT current_auction_price, starting_price, status FROM item WHERE item_id = %s" % (item_id)
         try:
             cursor.execute(query)
             record = cursor.fetchone()
-            current_price = record[0]
-            current_status = record[1]
+            current_price = record[0] if record[0] is not None else record[1]
+            current_status = record[2]
         except Exception as e:
             log_for_except(__name__, e)
             return False, item_update_item_with_bid_failed_db

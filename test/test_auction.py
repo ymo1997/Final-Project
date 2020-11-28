@@ -32,6 +32,35 @@ def test_bid_item():
     auction_id = response.json()["auction_id"]
     assert response.status_code == 400
 
+    params = {
+        'item_id' : 3,
+    }
+    
+    api_url = server_url + '/item/get-item-info'
+    response = post(api_url, json = params)
+    record = response.json()
+    current_auction_price = record["current_auction_price"]
+    if current_auction_price is None:
+        current_auction_price = record["starting_price"]
+
+    params = {
+        'auction_user_id' : 5,
+        'item_id' : 4,
+        'auction_price' : current_auction_price + 100,
+    }
+
+    api_url = server_url + '/auction/bid-item'
+    response = post(api_url, json = params)
+    auction_id = response.json()["auction_id"]
+    assert response.status_code == 200
+
+    params['auction_price'] = current_auction_price + 200
+
+    api_url = server_url + '/auction/bid-item'
+    response = post(api_url, json = params)
+    auction_id = response.json()["auction_id"]
+    assert response.status_code == 200
+
 
 # def test_list_item():
 #     test_status = "ready"

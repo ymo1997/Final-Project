@@ -193,46 +193,38 @@ def test_item_list():
     params = {
         'status': "ready"
     }
-
     api_url = server_url + '/item/list-items'
     response = post(api_url, json = params)
     record = response.json()
-    
     assert response.status_code == 200
     assert len(record["item_list"]) == 1
 
     params = {
         'status': "on-going"
     }
-
     api_url = server_url + '/item/list-items'
     response = post(api_url, json = params)
     record = response.json()
-    
     assert response.status_code == 200
-    assert len(record["item_list"]) == 1
+    assert len(record["item_list"]) == 2
 
     params = {
         'status': "completed"
     }
-
     api_url = server_url + '/item/list-items'
     response = post(api_url, json = params)
     record = response.json()
-    
     assert response.status_code == 200
     print(record["item_list"])
     assert len(record["item_list"]) == 1
 
     params = {
     }
-
     api_url = server_url + '/item/list-items'
     response = post(api_url, json = params)
     record = response.json()
-    
     assert response.status_code == 200
-    assert len(record["item_list"]) == 3
+    assert len(record["item_list"]) == 4
 
     params = {
         'status': "reported"

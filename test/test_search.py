@@ -16,7 +16,7 @@ def test_search_search_item_by_keyword():
     
     print(record["item_list"])
     assert response.status_code == 200
-    assert len(record["item_list"]) == 2
+    assert len(record["item_list"]) == 3
 
     params = {
         'keyword': None
@@ -27,7 +27,7 @@ def test_search_search_item_by_keyword():
     record = response.json()
     
     assert response.status_code == 200
-    assert len(record["item_list"]) == 3
+    assert len(record["item_list"]) == 4
 
 
 def test_search_search_item_by_category():
