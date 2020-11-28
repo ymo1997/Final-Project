@@ -791,7 +791,7 @@ def item_list_user_sell_items():
         in: body
         required: true
         schema:
-          id: item-list-items
+          id: list-user-sell-items
           properties:
             user_id:
               type: integer
@@ -811,6 +811,7 @@ def item_list_user_sell_items():
     if result:
         return jsonify(data), 200
     return jsonify(data), 400
+
 
 #---------- AUCTION APIs ----------#
 @app.route('/auction/bid-item', methods=['POST'])

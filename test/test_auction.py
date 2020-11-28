@@ -4,62 +4,88 @@ from requests import post, get
 
 server_url = 'http://localhost:5000'
 
-# def test_bid_item():
-#     params = {
-#         'item_id' : 3,
-#     }
+def pytest_namespace():
+    return {
+        'newly_created_item_id': None,
+        }
+
+
+def test_bid_item():
+    params = {
+        'description': 'This pair of Chinese republic period miniature porcelain vases',
+        'item_name': 'Pair Chinese Republic', 
+        'seller_id': 2, 
+        'starting_price': 500.0, 
+        'auction_start_time': 1606432462, 
+        'auction_end_time': 1606583144, 
+        'category_id': 9,
+        'condition': 2,
+        'image_url': "https://www.flaticon.com/svg/static/icons/svg/914/914832.svg",
+        'shipping_cost': 7.99
+        }
+
+    api_url = server_url + '/item/create-item'
+
+    response = post(api_url, json = params)
+    newly_created_item_id = response.json()["item_id"]
+    assert response.status_code == 200
+
+    params = {
+        'email': 'Johnson@mail.com', 
+        'password': 'JOHNSON',
+        'first_name': 'Boris',
+        'last_name':'Johnson',
+    }
+    api_url = server_url + '/user/create-account'
+
+    response = post(api_url, json = params)
+    newly_created_user_id = response.json()["_id"]
+    assert response.status_code == 200
+
+    params = {
+        'item_id' : newly_created_item_id,
+    }
     
-#     api_url = server_url + '/item/get-item-info'
-#     response = post(api_url, json = params)
-#     record = response.json()
-#     current_auction_price = record["current_auction_price"]
+    api_url = server_url + '/item/get-item-info'
+    response = post(api_url, json = params)
+    record = response.json()
+    current_auction_price = record["starting_price"]
 
-#     params = {
-#         'auction_user_id' : 5,
-#         'item_id' : 3,
-#         'auction_price' : current_auction_price + 100,
-#     }
+    params = {
+        'auction_user_id' : newly_created_user_id,
+        'item_id' : newly_created_item_id,
+        'auction_price' : current_auction_price + 100,
+    }
 
-#     api_url = server_url + '/auction/bid-item'
-#     response = post(api_url, json = params)
-#     auction_id = response.json()["auction_id"]
-#     assert response.status_code == 200
+    api_url = server_url + '/auction/bid-item'
+    response = post(api_url, json = params)
+    auction_id = response.json()["auction_id"]
+    assert response.status_code == 200
 
-#     params['auction_price'] = current_auction_price + 100
+    params['auction_price'] = current_auction_price + 100
 
-#     api_url = server_url + '/auction/bid-item'
-#     response = post(api_url, json = params)
-#     auction_id = response.json()["auction_id"]
-#     assert response.status_code == 400
+    api_url = server_url + '/auction/bid-item'
+    response = post(api_url, json = params)
+    auction_id = response.json()["auction_id"]
+    assert response.status_code == 400
 
-#     params = {
-#         'item_id' : 3,
-#     }
-    
-#     api_url = server_url + '/item/get-item-info'
-#     response = post(api_url, json = params)
-#     record = response.json()
-#     current_auction_price = record["current_auction_price"]
-#     if current_auction_price is None:
-#         current_auction_price = record["starting_price"]
+    params = {
+        'item_id': pytest.newly_created_item_id
+    }
 
-#     params = {
-#         'auction_user_id' : 5,
-#         'item_id' : 4,
-#         'auction_price' : current_auction_price + 100,
-#     }
+    api_url = server_url + '/item/delete-item'
+    response = post(api_url, json = params)
+    assert response.status_code == 200
 
-#     api_url = server_url + '/auction/bid-item'
-#     response = post(api_url, json = params)
-#     auction_id = response.json()["auction_id"]
-#     assert response.status_code == 200
+    params = {
+        'account_id': pytest.newly_created_user_id
+    }
+    api_url = server_url + '/user/delete-account'
 
-#     params['auction_price'] = current_auction_price + 200
+    response = post(api_url, json = params)
+    assert response.status_code == 200
 
-#     api_url = server_url + '/auction/bid-item'
-#     response = post(api_url, json = params)
-#     auction_id = response.json()["auction_id"]
-#     assert response.status_code == 200
+
 
 
 def test_get_auction_history():
