@@ -346,6 +346,8 @@ def item_create_item():
               type: integer
             image_url:
               type: string
+            shipping_cost:
+              type: float
     responses:
       200:
         description: Succeeded - item is created.
@@ -363,12 +365,13 @@ def item_create_item():
     starting_price = request.json.get('starting_price')
     condition = request.json.get('condition')
     image_url = request.json.get('image_url')
+    shipping_cost = request.json.get('shipping_cost')
 
     with ClusterRpcProxy(CONFIG) as rpc:
         result, data = rpc.item.create_item(item_name, 
         seller_id, category_id, description, 
         auction_start_time, auction_end_time,
-        starting_price, condition, image_url)
+        starting_price, condition, image_url, shipping_cost)
 
     if result:
         return jsonify(data), 200
@@ -434,6 +437,8 @@ def item_update_item_info():
               type: integer
             image_url:
               type: string
+            shipping_cost:
+              type: float
     responses:
       200:
         description: Succeeded - item info is updated.
@@ -450,12 +455,14 @@ def item_update_item_info():
     starting_price = request.json.get('starting_price')
     condition = request.json.get('condition')
     image_url = request.json.get('image_url')
+    shipping_cost = request.json.get('shipping_cost')
+
 
     with ClusterRpcProxy(CONFIG) as rpc:
         result, msg = rpc.item.update_item_info(
         item_id, item_name, category_id, 
         description, auction_start_time, auction_end_time,
-        starting_price, condition, image_url)
+        starting_price, condition, image_url, shipping_cost)
 
     if result:
         return msg, 200

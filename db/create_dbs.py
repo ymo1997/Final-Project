@@ -80,7 +80,8 @@ cursor.execute(
     item_id SERIAL PRIMARY KEY, item_name VARCHAR(255) NOT NULL, seller_id INTEGER NOT NULL, \
     buyer_id INTEGER, category_id INTEGER NOT NULL REFERENCES category(category_id), description TEXT, \
     status VARCHAR(10) NOT NULL, auction_start_time INTEGER NOT NULL, auction_end_time INTEGER NOT NULL, \
-    starting_price FLOAT NOT NULL, current_auction_price FLOAT, current_auction_buyer_id INTEGER, condition INTEGER NOT NULL, image_url TEXT);")
+    starting_price FLOAT NOT NULL, current_auction_price FLOAT, current_auction_buyer_id INTEGER, \
+    condition INTEGER NOT NULL, image_url TEXT, shipping_cost FLOAT NOT NULL);")
 
 cursor.execute(
     "CREATE TABLE auction_order (auction_id INTEGER NOT NULL, auction_user_id INTEGER NOT NULL, \
@@ -97,16 +98,17 @@ for category in category_list:
 initial_image_url = "https://www.flaticon.com/svg/static/icons/svg/743/743007.svg"
 item_list = [
     ("1901 $10 Bison Legal Tender Note", 1, "NULL", 5, "One 1901 $10 Bison Legal Tender Note.", "ready", 
-    datetime(2020, 11, 28, 10, 0, 0).timestamp(), datetime(2020, 11, 30, 10, 0, 0).timestamp(), 500, "NULL", "NULL", 7, initial_image_url), 
+    datetime(2020, 11, 28, 10, 0, 0).timestamp(), datetime(2020, 11, 30, 10, 0, 0).timestamp(), 500, "NULL", "NULL", 7, initial_image_url, 0.0), 
     ("TWO JADE BI DISCS", 1, 2, 2, "The Irving Collection, New York, by 1987.", "completed", 
-    datetime(2020, 11, 21, 10, 0, 0).timestamp(), datetime(2020, 11, 23, 10, 0, 0).timestamp(), 2000, 3500, 2, 2, initial_image_url), 
+    datetime(2020, 11, 21, 10, 0, 0).timestamp(), datetime(2020, 11, 23, 10, 0, 0).timestamp(), 2000, 3500, 2, 2, initial_image_url, 10.0), 
     ("MID-CENTURY STYLE HIDE UPHOLSTERED ARMCHAIRS", 3, "NULL", 4, "a pair, each raised on splayed tapered legs to the fore 75 cm. high; 63 cm. wide; 65 cm. deep", "on-going", 
-    datetime(2020, 11, 24, 10, 0, 0).timestamp(), datetime(2020, 12, 12, 10, 0, 0).timestamp(), 900, 1200, 2, 3, initial_image_url)
+    datetime(2020, 11, 24, 10, 0, 0).timestamp(), datetime(2020, 12, 12, 10, 0, 0).timestamp(), 900, 1200, 2, 3, initial_image_url, 5.99)
 ]
 for item in item_list:
-    query = """INSERT INTO item (item_name, seller_id, buyer_id, category_id, description, status, \
-        auction_start_time, auction_end_time, starting_price, current_auction_price, current_auction_buyer_id, condition, image_url) \
-        VALUES ('%s', %s, %s, %s, '%s', '%s', %d, %d, %s, %s, %s, %d, '%s');""" % item
+    query = """INSERT INTO item (item_name, seller_id, buyer_id, category_id, \
+        description, status, auction_start_time, auction_end_time, starting_price, \
+        current_auction_price, current_auction_buyer_id, condition, image_url, shipping_cost) \
+        VALUES ('%s', %s, %s, %s, '%s', '%s', %d, %d, %s, %s, %s, %d, '%s', %f);""" % item
     cursor.execute(query)
 
 auction_order_list = [

@@ -19,6 +19,7 @@ CURRENT_AUCTION_PRICE = "current_auction_price"
 CURRENT_AUCTION_BUYER_ID = "current_auction_buyer_id"
 CONDITION = "condition"
 IMAGE_URL = "image_url"
+SHIPPING_COST = "shipping_cost"
 
 ITEM_STATUS_READY = "ready"
 ITEM_STATUS_ON_GOING = "on-going"
@@ -52,18 +53,18 @@ class item(object):
     shopping_cart_rpc = RpcProxy("shopping_cart")
 
     @rpc
-    def create_item(self, item_name, seller_id, category_id, description, auction_start_time, auction_end_time, starting_price, condition, image_url):
+    def create_item(self, item_name, seller_id, category_id, description, auction_start_time, auction_end_time, starting_price, condition, image_url, shipping_cost):
         self.update_all_auctions_status()
         status = ITEM_STATUS_READY if datetime.now().timestamp() < auction_start_time else ITEM_STATUS_ON_GOING
         returned_data = {ITEM_ID: None}
         params = (item_name, seller_id, "NULL", category_id, description, status, auction_start_time, 
-            auction_end_time, starting_price, "NULL", "NULL", condition, image_url)
+            auction_end_time, starting_price, "NULL", "NULL", condition, image_url, shipping_cost)
 
         try:
             query = """INSERT INTO item (item_name, seller_id, buyer_id, category_id, description, status, \
             auction_start_time, auction_end_time, starting_price, current_auction_price, \
-            current_auction_buyer_id, condition, image_url) \
-            VALUES ('%s', %s, %s, %s, '%s', '%s', %d, %d, %s, %s, %s, %d, '%s') RETURNING item_id;""" % params
+            current_auction_buyer_id, condition, image_url, shipping_cost) \
+            VALUES ('%s', %s, %s, %s, '%s', '%s', %d, %d, %s, %s, %s, %d, '%s', %f) RETURNING item_id;""" % params
             cursor.execute(query)
             returned_data[ITEM_ID] = cursor.fetchone()[0]
         except Exception as e:
@@ -100,14 +101,14 @@ class item(object):
 
 
     @rpc 
-    def update_item_info(self, item_id, item_name, category_id, description, auction_start_time, auction_end_time, starting_price, condition, image_url):
+    def update_item_info(self, item_id, item_name, category_id, description, auction_start_time, auction_end_time, starting_price, condition, image_url, shipping_cost):
         self.update_all_auctions_status()
         params = (item_name, category_id, description, auction_start_time,
-            auction_end_time, starting_price, condition, image_url, item_id)
+            auction_end_time, starting_price, condition, image_url, shipping_cost, item_id)
         try:
             query = """UPDATE item SET item_name = '%s', category_id = %d, \
                 description = '%s', auction_start_time = %d, auction_end_time = %d, \
-                starting_price = %f, condition = %d, image_url = '%s' WHERE item_id = %d;""" % params
+                starting_price = %f, condition = %d, image_url = '%s', shipping_cost = %f WHERE item_id = %d;""" % params
             cursor.execute(query)
         except Exception as e:
             log_for_except(__name__, e)
@@ -130,7 +131,7 @@ class item(object):
             query = """SELECT item_id, item_name, seller_id, buyer_id, \
             item.category_id, category_name, description, status, auction_start_time, \
             auction_end_time, starting_price, current_auction_price, \
-            current_auction_buyer_id, condition, image_url FROM \
+            current_auction_buyer_id, condition, image_url, shipping_cost FROM \
             (item INNER JOIN category ON item.category_id = category.category_id) \
             WHERE item_id = %d;""" % params
             cursor.execute(query)
@@ -155,6 +156,7 @@ class item(object):
         returned_data[CURRENT_AUCTION_BUYER_ID] = record[12]
         returned_data[CONDITION] = record[13]
         returned_data[IMAGE_URL] = record[14]
+        returned_data[SHIPPING_COST] = record[15]
         returned_data[MESSAGE] = item_get_item_info_failed
 
         return True, returned_data
@@ -341,14 +343,14 @@ class item(object):
             query = """SELECT item_id, item_name, seller_id, buyer_id, \
             item.category_id, category_name, description, status, auction_start_time, \
             auction_end_time, starting_price, current_auction_price, \
-            current_auction_buyer_id, condition, image_url FROM \
+            current_auction_buyer_id, condition, image_url, shipping_cost FROM \
             (item INNER JOIN category ON item.category_id = category.category_id);"""
         else:
             params = (status)
             query = """SELECT item_id, item_name, seller_id, buyer_id, \
             item.category_id, category_name, description, status, auction_start_time, \
             auction_end_time, starting_price, current_auction_price, \
-            current_auction_buyer_id, condition, image_url FROM \
+            current_auction_buyer_id, condition, image_url, shipping_cost FROM \
             (item INNER JOIN category ON item.category_id = category.category_id) \
             WHERE status = '%s';""" % params
 
@@ -377,6 +379,7 @@ class item(object):
             temp_dict[CURRENT_AUCTION_BUYER_ID] = record[12]
             temp_dict[CONDITION] = record[13]
             temp_dict[IMAGE_URL] = record[14]
+            temp_dict[SHIPPING_COST] = record[15]
             returned_data["item_list"].append(temp_dict.copy())
         
         returned_data[MESSAGE] = item_list_item_suceeded
@@ -409,14 +412,14 @@ class item(object):
             query = """SELECT item_id, item_name, seller_id, buyer_id, \
             item.category_id, category_name, description, status, auction_start_time, \
             auction_end_time, starting_price, current_auction_price, \
-            current_auction_buyer_id, condition, image_url FROM \
+            current_auction_buyer_id, condition, image_url, shipping_cost FROM \
             (item INNER JOIN category ON item.category_id = category.category_id);"""
         else:
             params = (keyword)
             query = """SELECT item_id, item_name, seller_id, buyer_id, \
             item.category_id, category_name, description, status, auction_start_time, \
             auction_end_time, starting_price, current_auction_price, \
-            current_auction_buyer_id, condition, image_url FROM \
+            current_auction_buyer_id, condition, image_url, shipping_cost FROM \
             (item INNER JOIN category ON item.category_id = category.category_id) \
             WHERE lower(item_name) LIKE \'%""" + keyword.lower() + """%\';"""
 
@@ -445,6 +448,7 @@ class item(object):
             temp_dict[CURRENT_AUCTION_BUYER_ID] = record[12]
             temp_dict[CONDITION] = record[13]
             temp_dict[IMAGE_URL] = record[14]
+            temp_dict[SHIPPING_COST] = record[14]
             returned_data["item_list"].append(temp_dict.copy())
         
         returned_data[MESSAGE] = item_items_by_keyword_suceeded
@@ -459,13 +463,11 @@ class item(object):
         query = """SELECT item_id, item_name, seller_id, buyer_id, \
         item.category_id, category_name, description, status, auction_start_time, \
         auction_end_time, starting_price, current_auction_price, \
-        current_auction_buyer_id, condition, image_url FROM \
+        current_auction_buyer_id, condition, image_url, shipping_cost FROM \
         (item INNER JOIN category ON item.category_id = category.category_id) \
         WHERE item.category_id = %d;""" % params
 
         try:
-            print(query)
-            
             cursor.execute(query)
             records = cursor.fetchall()
         except Exception as e:
@@ -490,6 +492,7 @@ class item(object):
             temp_dict[CURRENT_AUCTION_BUYER_ID] = record[12]
             temp_dict[CONDITION] = record[13]
             temp_dict[IMAGE_URL] = record[14]
+            temp_dict[SHIPPING_COST] = record[15]
             returned_data["item_list"].append(temp_dict.copy())
         
         returned_data[MESSAGE] = item_items_by_category_suceeded

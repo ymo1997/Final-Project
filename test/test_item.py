@@ -22,7 +22,8 @@ def test_item_create_item():
         'auction_end_time': 1606583144, 
         'category_id': 9,
         'condition': 2,
-        'image_url': "https://www.flaticon.com/svg/static/icons/svg/914/914832.svg"
+        'image_url': "https://www.flaticon.com/svg/static/icons/svg/914/914832.svg",
+        'shipping_cost': 7.99
         }
 
     api_url = server_url + '/item/create-item'
@@ -40,7 +41,8 @@ def test_item_create_item():
         'auction_end_time': 1626583144, 
         'category_id': 9,
         'condition': 2,
-        'image_url': "https://www.flaticon.com/svg/static/icons/svg/914/914832.svg"
+        'image_url': "https://www.flaticon.com/svg/static/icons/svg/914/914832.svg",
+        'shipping_cost': 8.99
         }
 
     api_url = server_url + '/item/create-item'
@@ -71,7 +73,8 @@ def test_item_update_item_info():
         'auction_end_time': datetime(2020, 12, 12, 10, 20, 0).timestamp(), 
         'starting_price': 750, 
         'condition': 3,
-        'image_url': "https://www.flaticon.com/svg/static/icons/svg/914/914832.svg"
+        'image_url': "https://www.flaticon.com/svg/static/icons/svg/914/914832.svg", 
+        'shipping_cost': 0.00
     }
 
     api_url = server_url + '/item/update-item-info'
@@ -113,6 +116,7 @@ def test_item_get_item_info():
     assert record["auction_end_time"] == datetime(2020, 12, 12, 10, 20, 0).timestamp()
     assert record["starting_price"] == 750
     assert record["condition"] == 3
+    assert record["shipping_cost"] == 0.0
 
 
 def test_item_report_item():
@@ -185,7 +189,7 @@ def test_item_list_user_auctioning():
     assert record["auction_list"][1]["auction_id"] == 2
 
 
-def test_item_list_user_auctioning():
+def test_item_list():
     params = {
         'status': "ready"
     }
