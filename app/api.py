@@ -822,6 +822,38 @@ def auction_bid_item():
     return jsonify(data), 400
 
 
+@app.route('/auction/get-auction-history', methods=['GET'])
+def get_auction_history():
+    """
+    get-auction-history API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: get-auction-history
+          properties:
+            item_id:
+              type: integer
+    responses:
+      200:
+        description: Succeeded - auction history is retrieved.
+      400:
+        description: Failed - auction history is not retrieved
+      data:
+        description: Keys - auction_id, msg
+
+    """
+    item_id = request.args.get('item_id')
+
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, data = rpc.auction.get_auction_history(item_id)
+    if result:
+        return jsonify(data), 200
+    return jsonify(data), 400
+
+
 #---------- SHOPPING_CART APIs ----------#
 
 @app.route('/shopping-cart/create-user-shopping-cart', methods=['POST'])

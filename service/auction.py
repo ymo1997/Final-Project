@@ -137,10 +137,19 @@ class Auction(object):
     #TODO:
     @rpc
     def get_auction_history(self, item_id):
-        query = "SELECT * FROM auction WHERE item_id = %s " %(item_id)
-        item_db_cursor.execute(query)
-        return True, "Succeeded"
+        # returned_data = {MESSAGE: None, "auction_list": None}
+        # query = "SELECT * FROM auction WHERE item_id = %s " %(item_id)
 
+        # if try_execute_query(cursor, query, __name__):
+        #     returned_data[MESSAGE] = 
+        #     returned_data["auction_list"] = cursor.fetchall()
+        #     return True, returned_data
+        # else:
+        #     returned_data[MESSAGE] = 
+        #     return False, returned_data
+        # res = cursor.fetchall() 
+        # return True, res
+        pass
 
 
 
