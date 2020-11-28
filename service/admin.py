@@ -93,7 +93,7 @@ class Admin(object):
 
     @rpc
     def suspend_user_account(self, username):
-        return self.user_rpc.suspend_account(username)
+        return self.user_rpc.suspend_account(username = username)
 
 
     @rpc
@@ -103,17 +103,22 @@ class Admin(object):
 
     @rpc
     def delete_user_account(self, username):
-        return self.user_rpc.delete_account(username, "", True)
+        return self.user_rpc.delete_account(username = username)
 
 
     @rpc
-    def update_user_account_info(self, username, sex, age):
-        return self.user_rpc.update_account_info(username, sex, age)
+    def update_user_account_info(self, account_id, username, password, first_name, last_name):
+        return self.user_rpc.update_account_info(account_id, username, password, first_name, last_name)
 
 
     @rpc
     def check_is_admin_existed(self, admin):
         condition = {ADMIN: admin}
+        return admin_col.find_one(condition) is not None
+
+
+    def check_is_account_id_existed(self, account_id):
+        condition = {ID: account_id}
         return admin_col.find_one(condition) is not None
 
 

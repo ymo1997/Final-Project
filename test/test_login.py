@@ -75,7 +75,7 @@ def test_get_account_info():
 
 def test_register():
     params = {
-        'email': 'zackerburg@mail.com',
+        'email': 'sherlock@mail.com',
         'password': 'Zhang', 
         'first_name': 'a',
         'last_name': 'b',
@@ -87,10 +87,10 @@ def test_register():
     assert response.status_code == 200
 
     params = {
-        'email': 'zackerburg@mail.com'
+        'email': 'sherlock@mail.com'
     }
     api_url = server_url + '/admin/delete-admin-account'
-    esponse = post(api_url, json = params)
+    response = post(api_url, json = params)
     assert response.status_code == 200
 
     params = {
@@ -104,9 +104,10 @@ def test_register():
 
     response = post(api_url, json = params)
     assert response.status_code == 200
+    newly_created_user_id = response.json()["_id"]
     
     params = {
-        'email': 'zackerburg@mail.com'
+        "email": 'zackerburg@mail.com'
     }
     api_url = server_url + '/admin/delete-user-account'
     esponse = post(api_url, json = params)

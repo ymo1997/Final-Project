@@ -62,23 +62,29 @@ def user_update_account_info():
         schema:
           id: user-update-account-info
           properties:
+            account_id:
+              type: integer
             email:
               type: string
-            sex:
+            password:
               type: string
-            age:
-              type: integer
+            first_name:
+              type: string
+            last_name:
+              type: string
     responses:
       200:
         description: Suceeded - User info is changed.
       400:
         description: Failed - User info is not changed.
     """
-    username = request.json.get('email')
-    sex = request.json.get('sex')
-    age = request.json.get('age')
+    account_id = request.json.get('account_id')
+    email = request.json.get('email')
+    password = request.json.get('password')
+    first_name = request.json.get('first_name')
+    last_name = request.json.get('last_name')
     with ClusterRpcProxy(CONFIG) as rpc:
-        result, msg = rpc.user.update_account_info(username, sex, age)
+        result, msg = rpc.user.update_account_info(account_id, email, password, first_name, last_name)
     if result:
         return msg, 200
     return msg, 400
@@ -96,26 +102,52 @@ def user_delete_account():
         schema:
           id: user-delete-account
           properties:
-            email:
-              type: string
-            password:
-              type: string
+            account_id:
+              type: integer
     responses:
       200:
         description: Succeeded - user is deleted.
       400:
         description: Failed - user is not deleted.
     """
-    email = request.json.get('email')
-    password = request.json.get('password')
+    account_id = request.json.get('account_id')
     with ClusterRpcProxy(CONFIG) as rpc:
-        result, msg = rpc.user.delete_account(email, password)
+        result, msg = rpc.user.delete_account(account_id = account_id)
     if result:
         return msg, 200
     return msg, 400
 
 
-#---------- USER APIs ----------#
+@app.route('/user/suspend-account', methods=['POST'])
+def user_suspend_account():
+    """
+    user-suspend-account API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: admin-suspend-user-account
+          properties:
+            account_id:
+              type: string
+    responses:
+      200:
+        description: Succeeded - user is suspended.
+      400:
+        description: Failed - user is not suspended.
+    """
+    account_id = request.json.get('account_id')
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, msg = rpc.user.suspend_account(account_id = account_id)
+    if result:
+        return msg, 200
+    return msg, 400
+
+
+
+#---------- ADMIN APIs ----------#
 @app.route('/admin/create-user-account', methods=['POST'])
 def admin_create_user_account():
     """
@@ -168,7 +200,7 @@ def admin_delete_user_account():
         schema:
           id: admin-delete-user-account
           properties:
-            username:
+            email:
               type: string
     responses:
       200:
@@ -176,9 +208,9 @@ def admin_delete_user_account():
       400:
         description: Failed - user is not deleted.
     """
-    username = request.json.get('email')
+    email = request.json.get('email')
     with ClusterRpcProxy(CONFIG) as rpc:
-        result, msg = rpc.admin.delete_user_account(username)
+        result, msg = rpc.admin.delete_user_account(email)
     if result:
         return msg, 200
     return msg, 400
@@ -196,23 +228,29 @@ def admin_update_user_account_info():
         schema:
           id: admin-update-user-account-info
           properties:
+            account_id:
+              type: integer
             email:
               type: string
-            sex:
+            password:
               type: string
-            age:
-              type: integer
+            first_name:
+              type: string
+            last_name:
+              type: string
     responses:
       200:
         description: Succeeded - user info is changed.
       400:
         description: Failed - user info is not changed.
     """
-    username = request.json.get('email')
-    sex = request.json.get('sex')
-    age = request.json.get('age')
+    account_id = request.json.get('account_id')
+    email = request.json.get('email')
+    password = request.json.get('password')
+    first_name = request.json.get('first_name')
+    last_name = request.json.get('last_name')
     with ClusterRpcProxy(CONFIG) as rpc:
-        result, msg = rpc.admin.update_user_account_info(username, sex, age)
+        result, msg = rpc.admin.update_user_account_info(account_id, email, password, first_name, last_name)
     if result:
         return msg, 200
     return msg, 400
@@ -306,9 +344,9 @@ def admin_delete_admin_account():
       400:
         description: Failed - account is not deleted.
     """
-    username = request.json.get('email')
+    email = request.json.get('email')
     with ClusterRpcProxy(CONFIG) as rpc:
-        result, msg = rpc.admin.delete_admin_account(username)
+        result, msg = rpc.admin.delete_admin_account(email)
     if result:
         return msg, 200
     return msg, 400

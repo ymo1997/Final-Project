@@ -32,7 +32,7 @@ class User(object):
     shopping_cart_rpc = RpcProxy("shopping_cart")
 
 
-    def __init__(self):
+    def __init__(self):                                                 
         self.next_new_account_id = self.get_last_id() + 1
 
 
@@ -64,12 +64,14 @@ class User(object):
 
 
     @rpc
-    def update_account_info(self, username, sex, age):
+    def update_account_info(self, account_id, username, password, first_name, last_name):
         if self.check_is_username_existed(username):
-            condition = {USERNAME: username}
+            condition = {ID: account_id}
             record = user_col.find_one(condition)
-            record[SEX] = sex
-            record[AGE] = age
+            record[USERNAME] = username
+            record[PASSWORD] = password
+            record[FIRST_NAME] = first_name
+            record[LAST_NAME] = last_name
             result = user_col.update_one(condition, {'$set': record})
 
             if result.modified_count == 0:
@@ -80,23 +82,30 @@ class User(object):
 
 
     @rpc
-    def delete_account(self, username, password, isAdmin = False):
-        if self.check_is_username_existed(username):
-            account_id = self.get_account_id(username)
-            if self.verify_password(username, password) or isAdmin:
-                condition = {USERNAME: username}
-                if self.delete_user_db(condition):
-                    self.shopping_cart_rpc.delete_user_shopping_cart(account_id)
-                    return True, user_delete_account_suceeded
-                else:
-                    return False, user_delete_account_failed_db
+    def delete_account(self, account_id = None, username = None):
+        if username is not None:
+            if self.check_is_username_existed(username):
+                account_id = self.get_account_id(username)
+            else:
+                return False, user_delete_account_failed_not_existed
+
+        condition = {ID: account_id}
+        if self.delete_user_db(condition):
+            self.shopping_cart_rpc.delete_user_shopping_cart(account_id)
+            return True, user_delete_account_suceeded
         else:
-            return False, user_delete_account_failed_not_existed
+            return False, user_delete_account_failed_db
     
 
     @rpc
-    def suspend_account(self, username):
-        condition = {USERNAME: username}
+    def suspend_account(self, account_id = None, username = None):
+        if username is not None:
+            if self.check_is_username_existed(username):
+                account_id = self.get_account_id(username)
+            else:
+                return False, user_suspend_account_failed
+
+        condition = {ID: account_id}
         record = user_col.find_one(condition)
         record[STATUS] = STATUS_INVALID
         result = user_col.update_one(condition, {'$set': record})
