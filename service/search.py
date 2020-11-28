@@ -1,14 +1,9 @@
-from nameko.rpc import rpc, RpcProxy
-import psycopg2
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-from datetime import datetime
-from responses import *
-
+from config import *
 
 class Search(object):
-    name = "search"
+    name = SEARCH
 
-    item_rpc = RpcProxy("item")
+    item_rpc = RpcProxy(ITEM)
 
 
     @rpc

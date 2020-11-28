@@ -128,7 +128,7 @@ def user_suspend_account():
         in: body
         required: true
         schema:
-          id: admin-suspend-user-account
+          id: user-suspend-user-account
           properties:
             account_id:
               type: string
@@ -1054,7 +1054,7 @@ def shopping_cart_list_user_shopping_cart_items():
         in: body
         required: true
         schema:
-          id: checkout-shopping-cart
+          id: list-user-shopping-cart-items
           properties:
             user_id:
               type: integer

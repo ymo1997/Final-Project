@@ -1,8 +1,8 @@
-from nameko.rpc import rpc, RpcProxy
-import psycopg2
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-from datetime import datetime
-from responses import *
+from config import *
+
+#---------- CONFIG ----------#
+cursor = getDatabaseCusor(ITEM)
+
 
 #---------- DATA MODEL ----------#
 ITEM_ID = "item_id"
@@ -27,6 +27,8 @@ ITEM_STATUS_COMPLETED = "completed"
 ITEM_STATUS_REPORTED = "reported"
 
 MESSAGE = "msg"
+ITEM_LIST = "item_list"
+AUCTION_LIST = "auction_list"
 
 CATEGORY_NAME = "category_name"
 
@@ -38,19 +40,12 @@ AUCTION_USER_ID = "auction_user_id"
 AUCTION_PRICE = "auction_price"
 AUCTION_TIME = "auction_time"
 
-#---------- CONFIG ----------#
-server_name = "item"
 
-item_db_conn = psycopg2.connect(
-    user = "dbuser", password = "guest", host = "localhost", port = "5432", database = "item_db"
-)
-item_db_conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-cursor = item_db_conn.cursor()
 
 class item(object):
-    name = server_name
+    name = ITEM
 
-    shopping_cart_rpc = RpcProxy("shopping_cart")
+    shopping_cart_rpc = RpcProxy(SHOPPING_CART)
 
     @rpc
     def create_item(self, item_name, seller_id, category_id, description, auction_start_time, auction_end_time, starting_price, condition, image_url, shipping_cost):
@@ -326,7 +321,7 @@ class item(object):
             temp_dict[AUCTION_PRICE] = record[3]
             temp_dict[AUCTION_TIME] = record[4]
             temp_dict[STATUS] = record[5]
-            returned_data["auction_list"].append(temp_dict.copy())
+            returned_data[AUCTION_LIST].append(temp_dict.copy())
         
         returned_data[MESSAGE] = item_list_user_auctioning_suceeded
         return True, returned_data
@@ -335,7 +330,7 @@ class item(object):
     @rpc
     def list_items(self, status = None):
         self.update_all_auctions_status()
-        returned_data = {"item_list": [], MESSAGE: None}
+        returned_data = {ITEM_LIST: [], MESSAGE: None}
         if status is None:
             query = """SELECT item_id, item_name, seller_id, buyer_id, \
             item.category_id, category_name, description, status, auction_start_time, \
@@ -377,7 +372,7 @@ class item(object):
             temp_dict[CONDITION] = record[13]
             temp_dict[IMAGE_URL] = record[14]
             temp_dict[SHIPPING_COST] = record[15]
-            returned_data["item_list"].append(temp_dict.copy())
+            returned_data[ITEM_LIST].append(temp_dict.copy())
         
         returned_data[MESSAGE] = item_list_item_suceeded
         return True, returned_data
@@ -404,7 +399,7 @@ class item(object):
     @rpc
     def list_items_by_keyword_on_item_name(self, keyword = None):
         self.update_all_auctions_status()
-        returned_data = {"item_list": [], MESSAGE: None}
+        returned_data = {ITEM_LIST: [], MESSAGE: None}
         if keyword is None:
             query = """SELECT item_id, item_name, seller_id, buyer_id, \
             item.category_id, category_name, description, status, auction_start_time, \
@@ -446,7 +441,7 @@ class item(object):
             temp_dict[CONDITION] = record[13]
             temp_dict[IMAGE_URL] = record[14]
             temp_dict[SHIPPING_COST] = record[14]
-            returned_data["item_list"].append(temp_dict.copy())
+            returned_data[ITEM_LIST].append(temp_dict.copy())
         
         returned_data[MESSAGE] = item_items_by_keyword_suceeded
         return True, returned_data
@@ -455,7 +450,7 @@ class item(object):
     @rpc
     def list_items_by_category(self, category_id):
         self.update_all_auctions_status()
-        returned_data = {"item_list": [], MESSAGE: None}
+        returned_data = {ITEM_LIST: [], MESSAGE: None}
         params = (category_id)
         query = """SELECT item_id, item_name, seller_id, buyer_id, \
         item.category_id, category_name, description, status, auction_start_time, \
@@ -490,7 +485,7 @@ class item(object):
             temp_dict[CONDITION] = record[13]
             temp_dict[IMAGE_URL] = record[14]
             temp_dict[SHIPPING_COST] = record[15]
-            returned_data["item_list"].append(temp_dict.copy())
+            returned_data[ITEM_LIST].append(temp_dict.copy())
         
         returned_data[MESSAGE] = item_items_by_category_suceeded
         return True, returned_data
@@ -499,7 +494,7 @@ class item(object):
     @rpc
     def list_user_sell_items(self, user_id):
         self.update_all_auctions_status()
-        returned_data = {"item_list": [], MESSAGE: None}
+        returned_data = {ITEM_LIST: [], MESSAGE: None}
         params = (user_id)
         query = """SELECT item_id, item_name, seller_id, buyer_id, \
         item.category_id, category_name, description, status, auction_start_time, \
@@ -516,7 +511,7 @@ class item(object):
             return False, returned_data
 
         for record in records:
-            returned_data["item_list"].append(
+            returned_data[ITEM_LIST].append(
                 {
                     ITEM_ID: record[0],
                     ITEM_NAME: record[1],

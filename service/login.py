@@ -1,24 +1,29 @@
-from nameko.rpc import rpc, RpcProxy
-from pymongo import MongoClient
+from config import *
+
+#---------- DATA MODEL ----------#
+IS_ADMIN = "is_admin"
+ID = "_id"
+
+MESSAGE = "msg"
 
 class Login(object):
-    name = "login"
+    name = LOGIN
 
-    user_rpc = RpcProxy("user")
-    admin_rpc = RpcProxy("admin")
+    user_rpc = RpcProxy(USER)
+    admin_rpc = RpcProxy(ADMIN)
 
 
     @rpc
     def login(self, username, password):
         returned_data = {}
-        returned_data["is_admin"] = self.admin_rpc.check_is_admin_existed(username)
+        returned_data[IS_ADMIN] = self.admin_rpc.check_is_admin_existed(username)
 
-        if returned_data["is_admin"]:
+        if returned_data[IS_ADMIN]:
             result, msg, account_id = self.admin_rpc.verify_login_input(username, password)
         else:
             result, msg, account_id = self.user_rpc.verify_login_input(username, password)
-        returned_data["_id"] = account_id
-        returned_data["msg"] = msg
+        returned_data[ID] = account_id
+        returned_data[MESSAGE] = msg
         return result, returned_data
 
 
@@ -37,19 +42,3 @@ class Login(object):
         return result, data
 
 
-    @rpc
-    def user_login(self, email, password):
-        return True, ""
-    	
-
-    @rpc
-    def admin_login(self, admin, password):
-    	return True, ""
-
-    @rpc
-    def user_logout(self, username, password):
-    	return True, ""
-    	
-    @rpc
-    def admin_logout(self, admin, password):
-    	return True, ""

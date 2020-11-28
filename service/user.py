@@ -1,6 +1,9 @@
-from nameko.rpc import rpc, RpcProxy
-from pymongo import MongoClient
-from responses import *
+from config import *
+
+#---------- CONFIG ----------#
+user_db = client.user_db
+user_col = user_db.user
+
 
 #---------- DATA MODEL ----------#
 ID = "_id"
@@ -20,16 +23,10 @@ STATUS_INVALID = "invalid"
 
 NOT_FILLED = "not_filled"
 
-#---------- CONFIG ----------#
-server_name = "user"
-
-client = MongoClient('localhost:27017')
-user_db = client.user_db
-user_col = user_db.user
 
 class User(object):
-    name = server_name
-    shopping_cart_rpc = RpcProxy("shopping_cart")
+    name = USER
+    shopping_cart_rpc = RpcProxy(SHOPPING_CART)
 
 
     def __init__(self):                                                 
@@ -153,7 +150,7 @@ class User(object):
             user_col.insert_one(record)
             return True
         except Exception as e:
-            logging.error("An exception occurred while insert record in db :: {}".format(e))
+            logging.error("%s: Exception occurred while insert record in db :: %s" % format(__name__, e))
             return False
 
 

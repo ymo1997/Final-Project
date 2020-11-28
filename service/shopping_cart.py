@@ -1,8 +1,4 @@
-from nameko.rpc import rpc, RpcProxy
-import psycopg2
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-from datetime import datetime
-from responses import *
+from config import *
 from json import loads, dumps
 
 #---------- DATA MODEL ----------#
@@ -10,28 +6,18 @@ USER_ID = "user_id"
 ITEM_IDS = "item_ids"
 
 MESSAGE = "msg"
+ITEM_LIST = "item_list"
 
 
 #---------- CONFIG ----------#
-server_name = "shopping_cart"
-
-shopping_cart_db_conn = psycopg2.connect(
-    user = "dbuser", password = "guest", host = "localhost", port = "5432", database = "shopping_cart_db"
-)
-shopping_cart_db_conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-cursor = shopping_cart_db_conn.cursor()
-
-item_db_conn = psycopg2.connect(
-    user = "dbuser", password = "guest", host = "localhost", port = "5432", database = "item_db"
-)
-item_db_conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-item_cursor = item_db_conn.cursor()
+cursor = getDatabaseCusor(SHOPPING_CART)
+item_cursor = getDatabaseCusor(ITEM)
 
 
 class ShoppingCart(object):
-    name = server_name
+    name = SHOPPING_CART
 
-    item_rpc = RpcProxy("item")
+    item_rpc = RpcProxy(ITEM)
 
 
     @rpc
@@ -108,7 +94,7 @@ class ShoppingCart(object):
     def checkout_shopping_cart(self, user_id):
         self.item_rpc.update_all_auctions_status()
 
-        returned_data = {"item_list": [], MESSAGE: None}
+        returned_data = {ITEM_LIST: [], MESSAGE: None}
 
         query = """SELECT item_ids FROM shopping_cart WHERE user_id = %d;""" % int(user_id)
         if not try_execute_sql(cursor, query, __name__):
@@ -121,7 +107,7 @@ class ShoppingCart(object):
                 query = "SELECT current_auction_price FROM item WHERE item_id = %d;" % int(item_id)
                 item_cursor.execute(query)
                 price = item_cursor.fetchone()[0]
-                returned_data['item_list'].append({
+                returned_data[ITEM_LIST].append({
                     'item_id': int(item_id), 'price': float(price)
                     })
             returned_data[MESSAGE] = shopping_cart_checkout_shopping_cart_suceeded
@@ -143,7 +129,7 @@ class ShoppingCart(object):
     def list_user_shopping_cart_items(self, user_id):
         self.item_rpc.update_all_auctions_status()
         
-        returned_data = {"item_list": [], MESSAGE: None}
+        returned_data = {ITEM_LIST: [], MESSAGE: None}
         params = (user_id)
         query = """SELECT item_ids FROM shopping_cart WHERE user_id = %d;""" % params
         if not try_execute_sql(cursor, query, __name__):
@@ -151,7 +137,7 @@ class ShoppingCart(object):
             return False, returned_data
         try:
             record = loads(cursor.fetchone()[0])
-            returned_data["item_list"] = record
+            returned_data[ITEM_LIST] = record
             returned_data[MESSAGE] = shopping_cart_list_user_shopping_cart_items_suceeded
         except Exception as e:
             log_for_except(__name__, e)

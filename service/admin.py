@@ -1,6 +1,9 @@
-from nameko.rpc import rpc, RpcProxy
-from pymongo import MongoClient
-from responses import *
+from config import *
+
+#---------- CONFIG ----------#
+admin_db = client.admin_db
+admin_col = admin_db.admin
+
 
 #---------- DATA MODEL ----------#
 ID = "_id"
@@ -12,22 +15,26 @@ DATE_JOINED = "date_joined"
 IS_ADMIN = "is_admin"
 
 
-#---------- CONFIG ----------#
-server_name = "admin"
-
-client = MongoClient('localhost:27017')
-admin_db = client.admin_db
-admin_col = admin_db.admin
-
 class Admin(object):
+    name = ADMIN
 
-    name = server_name
-
-    user_rpc = RpcProxy("user")
-    search_rpc = RpcProxy("search")
+    user_rpc = RpcProxy(USER)
+    search_rpc = RpcProxy(SEARCH)
 
     def __init__(self):
         self.next_new_account_id = self.get_last_id() + 1
+
+
+    @rpc
+    def check_is_admin_existed(self, admin):
+        condition = {ADMIN: admin}
+        return admin_col.find_one(condition) is not None
+
+
+    def verify_password(self, admin, password):
+        condition = {ADMIN: admin}
+        result = admin_col.find_one(condition)
+        return result[PASSWORD] == password
 
 
     @rpc
@@ -40,6 +47,7 @@ class Admin(object):
                 return False, admin_verify_login_input_failed_wrong_password, account_id
         else:
             return False, admin_verify_login_input_failed_invalid_admin, None
+
 
     @rpc
     def create_admin_account(self, admin, password, first_name, last_name, date_joined):
@@ -111,21 +119,9 @@ class Admin(object):
         return self.user_rpc.update_account_info(account_id, username, password, first_name, last_name)
 
 
-    @rpc
-    def check_is_admin_existed(self, admin):
-        condition = {ADMIN: admin}
-        return admin_col.find_one(condition) is not None
-
-
     def check_is_account_id_existed(self, account_id):
         condition = {ID: account_id}
         return admin_col.find_one(condition) is not None
-
-
-    def verify_password(self, admin, password):
-        condition = {ADMIN: admin}
-        result = admin_col.find_one(condition)
-        return result[PASSWORD] == password
 
 
     def insert_admin_db(self, record):
@@ -133,7 +129,7 @@ class Admin(object):
             admin_col.insert_one(record)
             return True
         except Exception as e:
-            logging.error("An exception occurred while insert record in db :: {}".format(e))
+            logging.error("%s: Exception occurred while insert record in db :: %s" % (__name__, e))
             return False 
 
 
