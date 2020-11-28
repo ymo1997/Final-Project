@@ -45,3 +45,32 @@ def test_delete_user_shopping_cart():
 
     response = post(api_url, json = params)
     assert response.status_code == 200
+
+def test_checkout_shopping_cart():
+    params = {
+        'user_id': 2
+    }
+    api_url = server_url + '/shopping-cart/checkout-shopping-cart'
+    response = get(api_url, params = params)
+    assert response.status_code == 200
+
+    item_list = response.json()['item_list']
+    assert len(item_list) == 1
+    assert item_list[0]['price'] == 3500
+    
+    params = {
+        'user_id': 2,
+        'item_id': 2
+    }
+    api_url = server_url + '/shopping-cart/add-item-to-user-shopping-cart'
+    response = post(api_url, json = params)
+    assert response.status_code == 200
+
+    
+
+
+    
+
+
+
+
