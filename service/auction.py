@@ -134,6 +134,13 @@ class Auction(object):
         return True, "Succeeded"
 
 
+    #TODO:
+    @rpc
+    def get_auction_history(self, item_id):
+        query = "SELECT * FROM auction WHERE item_id = %s " %(item_id)
+        item_db_cursor.execute(query)
+        return True, "Succeeded"
+
 
 
 

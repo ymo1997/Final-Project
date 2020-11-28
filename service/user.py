@@ -65,20 +65,21 @@ class User(object):
 
     @rpc
     def update_account_info(self, account_id, username, password, first_name, last_name):
-        if self.check_is_username_existed(username):
-            condition = {ID: account_id}
-            record = user_col.find_one(condition)
-            record[USERNAME] = username
-            record[PASSWORD] = password
-            record[FIRST_NAME] = first_name
-            record[LAST_NAME] = last_name
-            result = user_col.update_one(condition, {'$set': record})
+        condition = {ID: account_id}
+        record = user_col.find_one(condition)
+        if record == None:
+            return False, user_update_account_info_failed
+        record[USERNAME] = username
+        record[PASSWORD] = password
+        record[FIRST_NAME] = first_name
+        record[LAST_NAME] = last_name
+        result = user_col.update_one(condition, {'$set': record})
 
-            if result.modified_count == 0:
-                return False, user_update_account_info_failed
-            else:
-                return True, user_update_account_info_suceeded
-        return False, user_update_account_info_failed
+        if result.modified_count == 0:
+            return False, user_update_account_info_failed
+        else:
+            return True, user_update_account_info_suceeded
+
 
 
     @rpc
