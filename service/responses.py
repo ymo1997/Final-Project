@@ -93,6 +93,11 @@ item_list_item_suceeded = "Suceeded: list info is retrieved."
 item_stop_item_auction_failed = "Failed: Item auction is not stopped."
 item_stop_item_auction_suceeded = "Suceeded: Item auction is stopped."
 
+item_list_item_by_keyword_failed = "Failed: item searching result is not retrieved."
+item_items_by_keyword_suceeded = "Suceeded: item searching result info is retrieved."
+
+item_list_item_by_category_failed = "Failed: item searching result is not retrieved."
+item_items_by_category_suceeded = "Suceeded: item searching result info is retrieved."
 
 #---------- AUCTION ----------#
 auction_bid_item_failed = "Failed: Item is not bid."
@@ -114,5 +119,16 @@ shopping_cart_delete_item_from_user_shopping_cart_suceeded = "Suceeded: Item is 
 
 
 #---------- LOGIN ----------#
+
+
+
+
+
+#---------- SEARCH ----------#
+
+
+
+
+
 
 

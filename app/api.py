@@ -905,10 +905,69 @@ def shopping_cart_delete_item_from_user_shopping_cart():
     return msg, 400
 
 
+#---------- SEARCH APIs ----------#
+@app.route('/search/search-item-by-keyword', methods=['GET'])
+def search_search_item_by_keyword():
+    """
+    search-search-item-by-keyword API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: search_search_item_by_keyword
+          properties:
+            keyword:
+              type: string (optional)
+    responses:
+      200:
+        description: Succeeded - searching result is retrieved.
+      400:
+        description: Failed - searching result is not retrieved.
+      data:
+        description: Keys - item_list, msg
+    """
+    keyword = request.args.get('keyword')
+
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, data = rpc.search.search_item_by_keyword(keyword)
+
+    if result:
+        return jsonify(data), 200
+    return jsonify(data), 400
 
 
+@app.route('/search/search-item-by-category', methods=['GET'])
+def search_search_item_by_category():
+    """
+    search-search-item-by-category API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: search_search_item_by_category
+          properties:
+            category_id:
+              type: integer
+    responses:
+      200:
+        description: Succeeded - searching result is retrieved.
+      400:
+        description: Failed - searching result is not retrieved.
+      data:
+        description: Keys - item_list, msg
+    """
+    category_id = int(request.args.get('category_id'))
 
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, data = rpc.search.search_item_by_category(category_id)
 
+    if result:
+        return jsonify(data), 200
+    return jsonify(data), 400
 
 
 #---------- LOGIN APIs ----------#

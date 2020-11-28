@@ -184,6 +184,7 @@ def test_item_list_user_auctioning():
     assert record["auction_list"][0]["auction_id"] == 1
     assert record["auction_list"][1]["auction_id"] == 2
 
+
 def test_item_list_user_auctioning():
     params = {
         'status': "ready"
