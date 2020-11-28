@@ -68,7 +68,8 @@ def test_get_auction_history():
     }
     api_url = server_url + '/auction/get-auction-history'
     response = get(api_url, params = params)
-    assert len(response.json()) == 3
+    auction_list = response.json()['auction_list']
+    assert len(auction_list) == 3
 
 
 
