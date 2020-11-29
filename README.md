@@ -7,6 +7,7 @@ Final project for MPCS 51205 Aut 2020 from Team White Fifty Fifty
 Tech stack: HTML, CSS, JavaScript, Django, Redis 
 
 ### Install
+Open `webserver` directory.
 
 Creating and activating virtual environment
 
