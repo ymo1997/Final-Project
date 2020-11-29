@@ -1,4 +1,4 @@
-### Auction Site - Final Project
+# Auction Site - Final Project
 
 Final project for MPCS 51205 Aut 2020 from Team White Fifty Fifty 
 
@@ -6,7 +6,7 @@ Final project for MPCS 51205 Aut 2020 from Team White Fifty Fifty
 
 Tech stack: HTML, CSS, JavaScript, Django, Redis 
 
-# Install
+### Install
 
 Creating and activating virtual environment
 
@@ -28,20 +28,20 @@ Navigate back to the main folder. Installing requirements and making migrations
     python manage.py migrate
     python manage.py runserver
 
-# How to run
+### How to run
 
 Open your browser and connect to http://localhost:8000
 
-# NOTE
+### NOTE
 
 Django will generate an sqlite database by default, but we are not using it to store any information.
 
 ## Backend
 
-# Descrption
+### Descrption
 Based on python packages: Nameko, Flask, Pymongo, psycopg2, flasgger
 
-# Run Project
+### Run Project
 1. Clone this git
 2. Open a console and install python packages
 ```
@@ -101,7 +101,7 @@ cd ../service
 nameko run user admin item auction shopping_cart login search notification
 ```
 
-# Run Test for back-end
+### Run Test for back-end
 In the back-end, we have implemented the user and admin's business logic. To test, please 
 ```
 cd ../test
