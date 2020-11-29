@@ -102,6 +102,9 @@ item_items_by_category_suceeded = "Suceeded: item searching result info is retri
 item_list_user_sell_item_failed = "Failed: user's items result is not retrieved."
 item_list_user_sell_item_suceeded = "Suceeded: user's items result info is retrieved."
 
+item_delete_user_sell_item_failed = "Failed: user's items is not deleted."
+item_delete_user_sell_item_suceeded = "Suceeded: user's items info is deleted."
+
 #---------- AUCTION ----------#
 auction_bid_item_failed = "Failed: Item is not bid."
 auction_bid_item_suceeded = "Suceeded: Item is bid."

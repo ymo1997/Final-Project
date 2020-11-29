@@ -135,6 +135,10 @@ class item(object):
             returned_data[MESSAGE] = item_get_item_info_failed
             return False, returned_data
 
+        if record is None:
+            returned_data[MESSAGE] = item_get_item_info_failed
+            return False, returned_data
+
         returned_data[ITEM_ID] = record[0]
         returned_data[ITEM_NAME] = record[1]
         returned_data[SELLER_ID] = record[2]
@@ -311,7 +315,7 @@ class item(object):
         result, data = self.user_rpc.get_account_info(seller_id)
         email = data['username']
         self.notification_rpc.send_email(email, "Auction item update", 
-        "A bidder bid on your item.")
+        "A user bid on your item.")
 
 
 
@@ -562,6 +566,19 @@ class item(object):
         returned_data[MESSAGE] = item_list_user_sell_item_suceeded
         return True, returned_data
 
+
+    @rpc
+    def delete_user_sell_items(self, user_id):
+        result, returned_data = self.list_user_sell_items(user_id)
+        if not result:
+            return False, item_delete_user_sell_item_failed
+        deleting_items = returned_data[ITEM_LIST]
+        for deleting_item in deleting_items:
+            result, msg = self.delete_item(deleting_item[ITEM_ID])
+            if not result:
+                return False, item_delete_user_sell_item_failed
+
+        return True, item_delete_user_sell_item_suceeded
 
 
 

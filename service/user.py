@@ -27,6 +27,7 @@ NOT_FILLED = "not_filled"
 class User(object):
     name = USER
     shopping_cart_rpc = RpcProxy(SHOPPING_CART)
+    item_rpc = RpcProxy(ITEM)
 
 
     def __init__(self):                                                 
@@ -90,6 +91,7 @@ class User(object):
         condition = {ID: account_id}
         if self.delete_user_db(condition):
             self.shopping_cart_rpc.delete_user_shopping_cart(account_id)
+            self.item_rpc.delete_user_sell_items(account_id)
             return True, user_delete_account_suceeded
         else:
             return False, user_delete_account_failed_db
@@ -115,13 +117,18 @@ class User(object):
 
 
     @rpc
-    def verify_login_input(self, username, password):
-        if self.check_is_username_existed(username):
+    def verify_login_input(self, username, password): 
+        if self.check_is_username_existed(username):   
             account_id = self.get_account_id(username)
-            if self.verify_password(username, password):
-                return True, user_verify_login_input_suceeded, account_id
-            else:
-                return False, user_verify_login_input_failed_wrong_password, account_id
+            result, returned_data = self.get_account_info(account_id)
+            if result:
+                status = returned_data[STATUS]
+                if status == STATUS_INVALID:
+                    return False, user_verify_login_input_failed_invalid_username, None
+                if self.verify_password(username, password):
+                    return True, user_verify_login_input_suceeded, account_id
+                else:
+                    return False, user_verify_login_input_failed_wrong_password, account_id
         else:
             return False, user_verify_login_input_failed_invalid_username, None
 

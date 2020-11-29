@@ -60,8 +60,36 @@ def test_user_suspend():
     response = post(api_url, json = params)
     assert response.status_code == 200
 
+    params = {
+        'email': 'Johnson@mail.com',
+        'password': 'JOHNSON'
+    }
+    api_url = server_url + '/login/login'
+
+    response = post(api_url, json = params)
+    assert response.status_code == 400
+    assert response.json()["_id"] == None
+
 
 def test_user_delete():
+    params = {
+        'description': 'This pair of Chinese republic period miniature porcelain vases',
+        'item_name': 'Pair Chinese Republic', 
+        'seller_id': pytest.newly_created_user_id, 
+        'starting_price': 500.0, 
+        'auction_start_time': 1606432462, 
+        'auction_end_time': 1606583144, 
+        'category_id': 9,
+        'condition': 2,
+        'image_url': "https://www.flaticon.com/svg/static/icons/svg/914/914832.svg",
+        'shipping_cost': 7.99
+        }
+    api_url = server_url + '/item/create-item'
+    response = post(api_url, json = params)
+    newly_created_item_id = response.json()["item_id"]
+    assert response.status_code == 200
+
+
     params = {
         'account_id': pytest.newly_created_user_id
     }
@@ -71,6 +99,15 @@ def test_user_delete():
     assert response.status_code == 200
     
     response = post(api_url, json = params)
+    assert response.status_code == 400
+
+    params = {
+        'item_id': newly_created_item_id
+    }
+
+    api_url = server_url + '/item/get-item-info'
+    response = post(api_url, json = params)
+    record = response.json()
     assert response.status_code == 400
 
 
