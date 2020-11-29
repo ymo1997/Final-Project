@@ -1,0 +1,191 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+
+<div class="bg0 m-t-23 p-b-140">
+  <div class="container">
+    <br />
+    {% if query %}
+    <h4 class="mtext-105 cl2 js-name-detail p-b-14">
+    {{query}}
+    </h4>
+    {% endif %}
+    <div class="row isotope-grid">
+      {% for item in items %}
+      <div
+        class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item {{item.category.category}}"
+      >
+        <div class="block2">
+          <div class="block2-pic hov-img0">
+            <div
+              data-caption="Women’s Wear"
+              style="background-image: url('{{item.image_url | image_url_replace}}'); height:300px; width: 100%; background-size:cover"
+            >
+              &nbsp;
+            </div>
+
+          </div>
+
+          <div class="block2-txt flex-w flex-t p-t-14">
+              <span class="stext-105 cl3">
+                {{item.category_name}}
+              </span>
+            <div class="block2-txt-child1 flex-col-l">
+              <a
+                href="{% url 'detail' slug=item.item_id %}"
+                class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6"
+              >
+                {{ item.item_name }} {% if item.status == "on-going" %}
+                <div class="live-badge">LIVE</div>
+                {% endif %}
+              </a>
+              <span class="stext-105 cl3">
+                ${{item.starting_price}}
+              </span>
+            </div>
+
+            <div class="block2-txt-child2 flex-r p-t-3">
+              <a
+                href="#"
+                class="btn-addwish-b2 dis-block pos-relative js-addwish-b2"
+              >
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %} 
+      </div>
+
+  <div class="btn-back-to-top" id="myBtn">
+    <span class="symbol-btn-back-to-top">
+      <i class="zmdi zmdi-chevron-up"></i>
+    </span>
+  </div>
+
+  {% endblock content %} {% block script %}
+  <script src="{% static 'vendor/jquery/jquery-3.2.1.min.js' %}"></script>
+  <script src="{% static 'vendor/animsition/js/animsition.min.js' %}"></script>
+  <script src="{% static 'vendor/bootstrap/js/popper.js' %}"></script>
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'vendor/select2/select2.min.js' %}"></script>
+  <script>
+    $(".js-select2").each(function () {
+      $(this).select2({
+        minimumResultsForSearch: 20,
+        dropdownParent: $(this).next(".dropDownSelect2"),
+      });
+    });
+  </script>
+  <script src="{% static 'vendor/daterangepicker/moment.min.js' %}"></script>
+  <script src="{% static 'vendor/daterangepicker/daterangepicker.js' %}"></script>
+  <script src="{% static 'vendor/slick/slick.min.js' %}"></script>
+  <script src="{% static 'js/slick-custom.js' %}"></script>
+  <script src="{% static 'vendor/parallax100/parallax100.js' %}"></script>
+  <script>
+    $(".parallax100").parallax100();
+  </script>
+  <script src="{% static 'vendor/MagnificPopup/jquery.magnific-popup.min.js' %}"></script>
+  <script>
+    $(".gallery-lb").each(function () {
+      $(this).magnificPopup({
+        delegate: "a",
+        type: "image",
+        gallery: {
+          enabled: true,
+        },
+        mainClass: "mfp-fade",
+      });
+    });
+  </script>
+  <script src="{% static 'vendor/isotope/isotope.pkgd.min.js' %}"></script>
+  <script src="{% static 'vendor/sweetalert/sweetalert.min.js' %}"></script>
+  <script>
+    $(".js-addwish-b2, .js-addwish-detail").on("click", function (e) {
+      e.preventDefault();
+    });
+
+    $(".js-addwish-b2").each(function () {
+      var nameProduct = $(this).parent().parent().find(".js-name-b2").html();
+      $(this).on("click", function () {
+        swal(nameProduct, "is added to wishlist !", "success");
+
+        $(this).addClass("js-addedwish-b2");
+        $(this).off("click");
+      });
+    });
+
+    $(".js-addwish-detail").each(function () {
+      var nameProduct = $(this)
+        .parent()
+        .parent()
+        .parent()
+        .find(".js-name-detail")
+        .html();
+
+      $(this).on("click", function () {
+        swal(nameProduct, "is added to wishlist !", "success");
+
+        $(this).addClass("js-addedwish-detail");
+        $(this).off("click");
+      });
+    });
+
+    $(".js-addcart-detail").each(function () {
+      var nameProduct = $(this)
+        .parent()
+        .parent()
+        .parent()
+        .parent()
+        .find(".js-name-detail")
+        .html();
+      $(this).on("click", function () {
+        swal(nameProduct, "is added to cart !", "success");
+      });
+    });
+  </script>
+  <script src="{% static 'vendor/perfect-scrollbar/perfect-scrollbar.min.js' %}"></script>
+  <script>
+      $(".js-pscroll").each(function () {
+        $(this).css("position", "relative");
+        $(this).css("overflow", "hidden");
+        var ps = new PerfectScrollbar(this, {
+          wheelSpeed: 1,
+          scrollingThreshold: 1000,
+          wheelPropagation: false,
+        });
+
+        $(window).on("resize", function () {
+          ps.update();
+        });
+      });
+
+    {% for item in items %}
+    {% if item.auction_status == "live" %}
+      $("#{{item.id}}").text("hello");
+      console.log("hello");
+    var counter = document.getElementsByClassName("counter");
+    for (var i = 0; i < counter.length; i++) {
+        counter.textCounter = counter.id
+    }
+
+    var deadline = "{{ item.cap_time|date:'M j, Y G:i:s' }}";
+    console.log(deadline);
+    var countDownDate = new Date(deadline).getTime();
+    var x = setInterval(function() {
+      var now = new Date().getTime();
+      var distance = countDownDate - now;
+      var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      var hours = Math.floor(
+        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
+      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      document.getElementById("{{ item.id }}").innerHTML =
+        days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+    });
+    {% endif %}
+    {% endfor %}
+  </script>
+  <script src="{% static 'js/main.js' %}"></script>
+
+  {% endblock script %}
+</div>

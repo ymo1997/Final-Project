@@ -1,0 +1,193 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+
+	<section class="sec-product-detail bg0 p-t-65 p-b-60">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-6 col-lg-7 p-b-30">
+					<div class="p-l-25 p-r-30 p-lr-0-lg">
+						<div class="wrap-slick3 flex-sb flex-w">
+							<div class="wrap-slick3-dots"></div>
+							<div class="wrap-slick3-arrows flex-sb-m flex-w"></div>
+
+							<div class="slick3 gallery-lb">
+								
+                                    {% for url in urls %}
+									<div class="item-slick3" data-thumb="{{url | image_url_replace}}">
+										<div class="wrap-pic-w pos-relative">
+											<img src="{{url | image_url_replace}}" alt="IMG-PRODUCT">
+
+											<a class="flex-c-m size-108 how-pos1 bor0 fs-16 cl10 bg0 hov-btn3 trans-04" href="{{ url | image_url_replace }}">
+												<i class="fa fa-expand"></i>
+											</a>
+										</div>
+									</div>
+                                    {% endfor %}
+							</div>
+						</div>
+					</div>
+				</div>
+					
+				<div class="col-md-6 col-lg-5 p-b-30">
+					<div class="p-r-50 p-t-5 p-lr-0-lg">
+            <h4 class="mtext-105 cl2 js-name-detail p-b-14">
+							{{item.category}} 
+						</h4>
+						<h4 class="mtext-105 cl2 js-name-detail p-b-14">
+							{{item.item_name}} 
+						</h4>
+                        <div class="container" style="display: flex; justify-content:space-between;">
+						<div class="mtext-106 cl2">
+							${{item.current_price}}
+						</div>
+                            {% if item.auction_status == "live" %}
+                                <div class="live-badge">LIVE</div>
+                            {% endif %}
+                        </div>
+            <div class="flex-w flex-t p-b-68"
+                style="
+                  padding: 10px 0 0 0;
+                  vertical-align: middle;
+                  cursor: pointer;
+                "
+              >
+                <div class="wrap-pic-s size-109 bor0 of-hidden m-r-18 m-t-6">
+                  <img
+                    src="{{seller.image.url}}"
+                    alt="Avatar"
+                    height="40px"
+                  />
+                </div>
+
+                <div class="size-207">
+                  <div
+                    class="flex-w flex-sb-m p-b-17"
+                    style="
+                      justify-content: normal;
+                      padding-bottom: 7px !important;
+                    "
+                  >
+                    <span
+                      class="mtext-107 cl2 p-r-20 seller"
+                      style="font-size: 20px;"
+                    >
+                      {{seller.first_name}} {{seller.last_name}}
+                    </span>
+
+                    <span class="fs-18 cl11">
+                      <i class="zmdi zmdi-star"></i>
+                      <i class="zmdi zmdi-star"></i>
+                      <i class="zmdi zmdi-star"></i>
+                      <i class="zmdi zmdi-star-half"></i>
+                      <i class="zmdi zmdi-star-outline"></i>
+                    </span>
+                  </div>
+                  <p>
+                    <span class="tag">Seller</span>
+                  </p>
+                </div>
+              </div>
+			  
+				{% if item.auction_status != "past"%}
+					<h4	style="display: inline-block;"class="mtext-105 cl2 p-r-14"
+					style="
+						padding: 14px 0 0 0;
+						text-transform: uppercase;
+						letter-spacing: 2px;
+						font-size: 20px;
+						font-weight: 600;
+					"
+					>
+					{% if item.auction_status == "upcoming" %}
+					Auction starts in
+					</h4>
+					<h3 style="color:#717fe0; 
+						font-size: 20px; display: inline-block;"class="stext-102 cl3">
+					{{item.start_time|timeuntil}}
+					{% elif item.auction_status == "live" %}
+					Auction ends in
+					</h4>
+					<h3  style="color:#717fe0; 
+						font-size: 20px; display: inline-block;"class="stext-102 cl3">
+					{{item.end_time|timeuntil}}
+					{% endif %}
+					</h3>
+				{% endif %}
+              <p class="stext-102 cl3 p-t-23">
+                {{item.item_description}} 
+              </p>
+
+              <div class="condition-widget">
+                <h4
+                  class="mtext-105 cl2 p-b-14"
+                  style="
+                    padding: 14px 0 0 0;
+                    text-transform: uppercase;
+                    letter-spacing: 2px;
+                    font-size: 20px;
+                    font-weight: 600;
+                  "
+                >
+                  Condition
+                </h4>
+                <ul class="pdp__condition-slider" style="margin-right: 25px;">
+                  <li
+                    class="pdp__condition-item {% if item.condition == '1' %}pdp__condition-item--selected{% endif %}"
+                  >
+                    Fair
+                  </li>
+                  <li
+                    class="pdp__condition-item {% if item.condition == '2' %}pdp__condition-item--selected{% endif %}"
+                  >
+                    Good
+                  </li>
+                  <li
+                    class="pdp__condition-item {% if item.condition == '3' %}pdp__condition-item--selected{% endif %}"
+                  >
+                    Very Good
+                  </li>
+                  <li
+                    class="pdp__condition-item {% if item.condition == '4' %}pdp__condition-item--selected{% endif %}"
+                  >
+                    Great
+                  </li>
+                  <li
+                    class="pdp__condition-item {% if item.condition == '5' %}pdp__condition-item--selected{% endif %}"
+                  >
+                    Excellent
+                  </li>
+                  <li
+                    class="pdp__condition-item {% if item.condition == '6' %}pdp__condition-item--selected{% endif %}"
+                  >
+                    Pristine
+                  </li>
+                </ul>
+              </div>
+              <div style="text-align: center;" class="room">
+                  {% if item.auction_status == "live" %}
+                  {% if user and not user.is_admin %}
+                  <a href="{% url 'room' slug=item.slug %}">
+                    <button style="display:inline-flex;" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+                      Go to auction
+                    </button>
+                  </a>
+                  {% elif user %}
+                  <a href="{% url 'stopauction'  %}?item_id={{item.slug}}">
+                    <button style="display:inline-flex;" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+                      Stop auction
+                    </button>
+                  </a>
+                  {% endif %}
+                  {% endif %}
+              </div>
+					</div>
+				</div>
+			</div>
+	</section>
+
+	<div class="btn-back-to-top" id="myBtn">
+		<span class="symbol-btn-back-to-top">
+			<i class="zmdi zmdi-chevron-up"></i>
+		</span>
+	</div>
+
+{% endblock content %} 

@@ -1,0 +1,97 @@
+{% extends 'base.html' %} {% load static %}
+ 
+{% block style %}
+
+input, textarea, label { display: initial; } textarea { width:
+-webkit-fill-available; }
+
+{% endblock style%} {% block content %}
+
+<div style="text-align: center;" class="container">
+  <div class="row p-t-50">
+    <div class="col-sm-10 col-lg-7 col-xl-5 m-lr-auto m-b-50">
+      <div
+        class="bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm"
+      >
+        <div
+          class="flex-w flex-t p-b-68"
+          style="
+            display: block;
+            padding: 10px 0 0 0;
+            vertical-align: middle;
+            cursor: pointer;
+          "
+        >
+          <div
+            style="
+              height: 170px;
+              width: 170px;
+              text-align: center;
+              margin: auto;
+            "
+            class="wrap-pic-s bor0 of-hidden m-r-18 m-t-6"
+          >
+            <img src="{{user.image.url}}" alt="Avatar" height="40px" />
+          </div>
+
+          <div class="bor12" style="text-align: center;">
+            <h4
+              style="padding-top: 30px; font-size: 30px;"
+              class="mtext-109 cl2"
+            >
+              {{user.first_name}} {{user.last_name}}
+            </h4>
+            <div
+              class="flex-w flex-sb-m p-b-17"
+              style="text-align: center; padding-bottom: 7px !important;"
+            >
+              <div style="margin: auto;" class="fs-18 cl11">
+                <i class="zmdi zmdi-star"></i>
+                <i class="zmdi zmdi-star"></i>
+                <i class="zmdi zmdi-star"></i>
+                <i class="zmdi zmdi-star-half"></i>
+                <i class="zmdi zmdi-star-outline"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-w flex-t p-t-30 p-b-13">
+          <div style="display: contents;" class="size-208">
+            <span style="margin: auto;" class="stext-110 cl2">
+              <ion-icon name="mail-outline"></ion-icon>
+            </span>
+            <span style="margin: auto;" class="mtext-110 cl2">
+              {{user.email}}
+            </span>
+          </div>
+        </div>
+
+        <div class="flex-w flex-t p-t-30 p-b-30">
+          <div style="display: contents;" class="size-208">
+            <span style="margin: auto;" class="stext-110 cl2">
+              <ion-icon name="person-outline"></ion-icon>
+            </span>
+            <span style="margin: auto;" class="mtext-110 cl2">
+              Member since {{user.date_joined}}
+            </span>
+          </div>
+        </div>
+        <a
+          href="{% url 'edit_profile' %}"
+          class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6"
+        >
+        <button
+          style="display: inline-flex;"
+          class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04"
+          data-toggle="modal"
+          data-target="#myModal"
+        >
+          Edit profile
+        </button>
+        </a>
+      </div>
+    </div>
+
+  {% endblock content %}
+</div>

@@ -1,0 +1,83 @@
+{% extends 'base.html' %} {% load static %}
+
+{% load crispy_forms_tags %}
+
+  {% block head %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js" integrity="sha256-AdQN98MVZs44Eq2yTwtoKufhnU+uZ7v2kXnD5vqzZVo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+ 
+  {{ form2.media }}
+  {% endblock head %}
+ {% block content %}
+	<div class="bg0 p-t-75 p-b-85">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
+					<div class="m-l-25 m-r--38 m-lr-0-xl">
+					
+				<h3 class="p-b-20 ltext-103 cl5">
+					Your Items
+				</h3>
+						<div class="wrap-table-shopping-cart">
+							<table class="table-shopping-cart">
+								<tr class="table_head">
+									<th class="column-1">Item</th>
+									<th class="column-2"></th>
+									<th class="column-3">Price</th>
+									<th class="column-4" style="text-align:center;">Category</th>
+									<th class="column-6"></th>
+								</tr>
+								{% for p in products %}
+								<tr class="table_row">
+									<td class="column-1">
+										<div class="how-itemcart1">
+											<img src="{{ p.image_url | image_url_replace}}" alt="IMG">
+										</div>
+									</td>
+									<td class="column-2"><a style="color: #6c7ae0;" href="{% url 'detail' slug=p.item_id %}">{{p.item_name}}</a></td>
+									<td class="column-3">{{p.current_price}}</td>
+									<td class="column-4" style="text-align:center;">{{p.category}}</td>
+									<td class="column-6">
+										<a href="{% url 'myProducts'  %}?remove_id={{ p.item_id }}">
+											<button
+											style="display: inline-flex;"
+											class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04"
+											onclick="removeItem()"
+											>
+												Remove Item
+											</button>
+										</a>
+									</td>
+								</tr>
+								{% endfor %}
+							</table>
+						</div>
+
+					</div>
+				</div>
+
+			<a href="{% url 'addProduct' %}">	
+        <button
+          style="display: inline-flex;"
+          class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04"
+        >
+			Add Item
+        </button>
+		</a>
+		</div>
+	<script>
+      $(function () {
+        $("#datetimepicker1").datetimepicker();
+      });
+    </script>
+	<script>
+		function removeItem() {
+			alert("Remove item successfully!");
+		}
+	</script>
+		
+{% endblock content %}
