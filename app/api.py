@@ -1419,38 +1419,38 @@ def login_get_account_info():
 #     return msg, 400
 
 
-# @app.route('/notification-send-email', methods=['POST'])
-# def notification_send_email():
-#     """
-#     notification-send-email API
-#     ---
-#     parameters:
-#       - name: body
-#         in: body
-#         required: true
-#         schema:
-#           id: notification-send-email
-#           properties:
-#             email_address:
-#               type: string
-#             subject:
-#               type: string
-#             content:
-#               type: string
-#     responses:
-#       200:
-#         description: Succeeded.
-#       400:
-#         description: Failed.
-#     """
-#     email_address = request.json.get('email_address')
-#     subject = request.json.get('subject')
-#     content = request.json.get('content')
-#     with ClusterRpcProxy(CONFIG) as rpc:
-#         result, msg = rpc.notification.send_email(email_address, subject, content)
-#     if result:
-#         return msg, 200
-#     return msg, 400
+@app.route('/notification-send-email', methods=['POST'])
+def notification_send_email():
+    """
+    notification-send-email API
+    ---
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          id: notification-send-email
+          properties:
+            email:
+              type: string
+            subject:
+              type: string
+            content:
+              type: string
+    responses:
+      200:
+        description: Succeeded.
+      400:
+        description: Failed.
+    """
+    email = request.json.get('email')
+    subject = request.json.get('subject')
+    content = request.json.get('content')
+    with ClusterRpcProxy(CONFIG) as rpc:
+        result, msg = rpc.notification.send_email(email, subject, content)
+    if result:
+        return msg, 200
+    return msg, 400
 
 
 

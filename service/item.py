@@ -46,6 +46,8 @@ class item(object):
     name = ITEM
 
     shopping_cart_rpc = RpcProxy(SHOPPING_CART)
+    notification_rpc = RpcProxy(NOTIFICATION)
+    user_rpc = RpcProxy(USER)
 
     @rpc
     def create_item(self, item_name, seller_id, category_id, description, auction_start_time, auction_end_time, starting_price, condition, image_url, shipping_cost):
@@ -231,12 +233,15 @@ class item(object):
     @rpc
     def update_item_with_bid(self, auction_id, auction_user_id, item_id, auction_price, auction_time):
         self.update_all_auctions_status()
-        query = "SELECT current_auction_price, starting_price, status FROM item WHERE item_id = %s" % (item_id)
+        query = "SELECT current_auction_price, starting_price, status, current_auction_buyer_id, seller_id\
+                 FROM item WHERE item_id = %s" % (item_id)
         try:
             cursor.execute(query)
             record = cursor.fetchone()
             current_price = record[0] if record[0] is not None else record[1]
             current_status = record[2]
+            current_buyer = record[3]
+            seller_id = record[4]
         except Exception as e:
             log_for_except(__name__, e)
             return False, item_update_item_with_bid_failed_db
@@ -295,6 +300,28 @@ class item(object):
         except Exception as e:
             log_for_except(__name__, e)
             return False, item_update_item_with_bid_failed_db
+
+        # send notification
+        result, data = self.user_rpc.get_account_info(current_buyer)
+        if current_buyer is not None:
+            email = data['username']
+            self.notification_rpc.send_email(email, "Auction item update", 
+            "A higher bidding price was placed by other buyer.")
+            
+        result, data = self.user_rpc.get_account_info(seller_id)
+        email = data['username']
+        self.notification_rpc.send_email(email, "Auction item update", 
+        "A bidder bid on your item.")
+
+
+
+        try:
+
+            cursor.execute(query)
+        except Exception as e:
+            log_for_except(__name__, e)
+            return False, item_update_item_with_bid_failed_db
+
 
         return True, item_update_item_with_bid_suceeded
 

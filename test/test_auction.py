@@ -9,13 +9,51 @@ def pytest_namespace():
     return {
         'newly_created_item_id': None,
         'newly_created_user_id': None,
+        'newly_created_seller_id': None,
+        'newly_created_overbidder_id': None,
         }
 
 def test_data_preparation():
     params = {
+        'email': 'lily@mail.com', 
+        'password': 'JOHNSON',
+        'first_name': 'Boris',
+        'last_name':'Johnson',
+    }
+    api_url = server_url + '/user/create-account'
+
+    response = post(api_url, json = params)
+    pytest.newly_created_overbidder_id = response.json()["_id"]
+    assert response.status_code == 200
+
+    params = {
+        'email': 'zhangyueyang7@gmail.com', 
+        'password': 'JOHNSON',
+        'first_name': 'Boris',
+        'last_name':'Johnson',
+    }
+    api_url = server_url + '/user/create-account'
+
+    response = post(api_url, json = params)
+    pytest.newly_created_seller_id = response.json()["_id"]
+    assert response.status_code == 200
+
+    params = {
+        'email': 'zyy1996zyy@hotmail.com', 
+        'password': 'JOHNSON',
+        'first_name': 'Boris',
+        'last_name':'Johnson',
+    }
+    api_url = server_url + '/user/create-account'
+
+    response = post(api_url, json = params)
+    pytest.newly_created_user_id = response.json()["_id"]
+    assert response.status_code == 200
+
+    params = {
         'description': 'This pair of Chinese republic period miniature porcelain vases',
         'item_name': 'Pair Chinese Republic', 
-        'seller_id': 2, 
+        'seller_id': pytest.newly_created_seller_id, 
         'starting_price': 500.0, 
         'auction_start_time': datetime.now().timestamp(), 
         'auction_end_time': datetime.now().timestamp() + 2, 
@@ -26,21 +64,8 @@ def test_data_preparation():
         }
 
     api_url = server_url + '/item/create-item'
-
     response = post(api_url, json = params)
     pytest.newly_created_item_id = response.json()["item_id"]
-    assert response.status_code == 200
-
-    params = {
-        'email': 'lily@mail.com', 
-        'password': 'JOHNSON',
-        'first_name': 'Boris',
-        'last_name':'Johnson',
-    }
-    api_url = server_url + '/user/create-account'
-
-    response = post(api_url, json = params)
-    pytest.newly_created_user_id = response.json()["_id"]
     assert response.status_code == 200
 
 
@@ -70,6 +95,7 @@ def test_bid_item():
     assert response.status_code == 400
 
     params['auction_price'] = current_auction_price + 400
+    params['auction_user_id'] = pytest.newly_created_overbidder_id
     api_url = server_url + '/auction/bid-item'
     response = post(api_url, json = params)
     auction_id = response.json()["auction_id"]
@@ -89,7 +115,7 @@ def test_get_auction_history():
 def test_list_user_shopping_cart_items():
     sleep(2)
     params = {
-        'user_id': pytest.newly_created_user_id
+        'user_id': pytest.newly_created_overbidder_id
     }
     api_url = server_url + '/shopping-cart/list-user-shopping-cart-items'
     response = get(api_url, params = params)
@@ -103,7 +129,20 @@ def test_data_delete():
         'account_id': pytest.newly_created_user_id
     }
     api_url = server_url + '/user/delete-account'
+    response = post(api_url, json = params)
+    assert response.status_code == 200
 
+    params = {
+        'account_id': pytest.newly_created_seller_id
+    }
+    api_url = server_url + '/user/delete-account'
+    response = post(api_url, json = params)
+    assert response.status_code == 200
+
+    params = {
+        'account_id': pytest.newly_created_overbidder_id
+    }
+    api_url = server_url + '/user/delete-account'
     response = post(api_url, json = params)
     assert response.status_code == 200
 

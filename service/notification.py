@@ -1,25 +1,25 @@
 from mailjet_rest import Client
 from config import *
 
-api_key = '01c8781e582ce292c1db9fae3d494c1c'
-api_secret = 'caa00a1184d5714ad2066663fb1aa789'
-sender_email = 'yinghuamo.4174@gmail.com'
+API_KEY = '01c8781e582ce292c1db9fae3d494c1c'
+API_SECRET = 'caa00a1184d5714ad2066663fb1aa789'
+SENDER_EMAIL = 'yinghuamo.4174@gmail.com'
 
 # https://www.mailjet.com/
-mailjet = Client(auth=(api_key, api_secret), version='v3.1')
+mailjet = Client(auth=(API_KEY, API_SECRET), version='v3.1')
 
 class Notification(object):
     name = NOTIFICATION
 
     @rpc
-    def send_email(self, subject, content):
-        api_key = None
-        api_secret = None
+    def send_email(self, email_address, subject, content):
+        api_key = API_KEY
+        api_secret = API_SECRET
         data = {
           'Messages': [
             {
               "From": {
-                "Email": sender_email,
+                "Email": SENDER_EMAIL,
                 "Name": ""
               },
               "To": [
