@@ -95,16 +95,19 @@ category_list = [
 for category in category_list:
     cursor.execute("""INSERT INTO category (category_name) VALUES (%s)""", category)
 
-initial_image_url = "https://www.flaticon.com/svg/static/icons/svg/743/743007.svg"
+initial_image_url_1 = "https://cdn-fsly.yottaa.net/59aef05c32f01c6b98e8f0d9/www.govmint.com/v~4b.46/media/catalog/product/cache/6233b85eec3a03e6a90cf4dddd884882/1/8/184428_1.jpg?yocs=m_"
+initial_image_url_2 = "https://a.1stdibscdn.com/chinese-mottled-bai-bi-disc-for-sale/1121189/f_212113721604129952175/21211372_master.jpg?disable=upscale&auto=webp&quality=60&width=960"
+initial_image_url_3 = "https://a.1stdibscdn.com/mid-century-modern-baby-blue-velvet-club-armchair-1960s-for-sale/1121189/f_153838721562685325548/15383872_master.jpg?disable=upscale&auto=webp&quality=60&width=960"
+initial_image_url_4 = "https://cdn-fsly.yottaa.net/59aef05c32f01c6b98e8f0d9/www.govmint.com/v~4b.46/media/catalog/product/cache/23c5af62df63748bdd45642a472f2812/1/9/1917-1-dollar-washington-legal-tender-currency-note-vf_184418_3.jpg?yocs=m_"
 item_list = [
     ("1901 $10 Bison Legal Tender Note", 1, "NULL", 5, "One 1901 $10 Bison Legal Tender Note.", "ready", 
-    datetime(2020, 12, 28, 10, 0, 0).timestamp(), datetime(2020, 12, 30, 10, 0, 0).timestamp(), 500, "NULL", "NULL", 7, initial_image_url, 0.0), 
+    datetime(2020, 12, 28, 10, 0, 0).timestamp(), datetime(2020, 12, 30, 10, 0, 0).timestamp(), 500, "NULL", "NULL", 7, initial_image_url_1, 0.0), 
     ("TWO JADE BI DISCS", 1, 2, 2, "The Irving Collection, New York, by 1987.", "completed", 
-    datetime(2020, 11, 21, 10, 0, 0).timestamp(), datetime(2020, 11, 23, 10, 0, 0).timestamp(), 2000, 3500, 2, 2, initial_image_url, 10.0), 
+    datetime(2020, 11, 21, 10, 0, 0).timestamp(), datetime(2020, 11, 23, 10, 0, 0).timestamp(), 2000, 3500, 2, 2, initial_image_url_2, 10.0), 
     ("MID-CENTURY STYLE HIDE UPHOLSTERED ARMCHAIRS", 3, "NULL", 4, "a pair, each raised on splayed tapered legs to the fore 75 cm. high; 63 cm. wide; 65 cm. deep", "on-going", 
-    datetime(2020, 11, 24, 10, 0, 0).timestamp(), datetime(2020, 12, 12, 10, 0, 0).timestamp(), 900, 1200, 2, 3, initial_image_url, 5.99), 
+    datetime(2020, 11, 24, 10, 0, 0).timestamp(), datetime(2020, 12, 12, 10, 0, 0).timestamp(), 900, 1200, 2, 3, initial_image_url_3, 5.99), 
     ("1901 $10 Bison Legal Tender Note", 1, "NULL", 5, "One 1901 $10 Bison Legal Tender Note.", "ready", 
-    datetime(2020, 11, 23, 10, 0, 0).timestamp(), datetime(2020, 11, 30, 10, 0, 0).timestamp(), 500, "NULL", "NULL", 7, initial_image_url, 0.0)
+    datetime(2020, 11, 23, 10, 0, 0).timestamp(), datetime(2020, 11, 30, 10, 0, 0).timestamp(), 500, "NULL", "NULL", 7, initial_image_url_4, 0.0)
 ]
 for item in item_list:
     query = """INSERT INTO item (item_name, seller_id, buyer_id, category_id, \

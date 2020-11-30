@@ -91,7 +91,7 @@ def user_login(request):
         password = request.POST['password']
         next_url = request.GET.get("next")
         print("next: {}".format(next_url))
-        r = requests.post(URL_BASE + "/login/login",
+        r = requests.post(URL_BASE + "login/login",
                           json = {"email": email, "password": password})
         print("DEBUG: status_code : {}".format(r.status_code))
         if r is None:
@@ -209,7 +209,7 @@ def user_suspend(request):
 def stopauction(request):
     item_id = request.GET.get('item_id')
     print(item_id)
-    r = requests.get(URL_BASE + "/item/stop-item-auction" +
+    r = requests.get(URL_BASE + "item/stop-item-auction" +
                     "?item_id=" + item_id)
     if r is None or r.status_code != 200:
         print("DEBUG: stop auction failed")

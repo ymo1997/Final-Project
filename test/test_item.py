@@ -198,7 +198,7 @@ def test_item_list():
     response = post(api_url, json = params)
     record = response.json()
     assert response.status_code == 200
-    assert len(record["item_list"]) == 2
+    assert len(record["item_list"]) == 1
 
     params = {
         'status': "completed"
@@ -208,7 +208,7 @@ def test_item_list():
     record = response.json()
     assert response.status_code == 200
     print(record["item_list"])
-    assert len(record["item_list"]) == 1
+    assert len(record["item_list"]) == 2
 
     params = {
     }
