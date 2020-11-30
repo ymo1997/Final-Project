@@ -9,19 +9,20 @@ Tech stack: HTML, CSS, JavaScript, Django, Redis
 ### Install
 Open `webserver` directory.
 
-Creating and activating virtual environment
-
+Creating and activating virtual environment (Optional)
+```
     virtualenv venv
-    cd venv/Scripts
-    activate
-(source the `venv/bin/activate` file if you are using mac)
-Setup & install Redis server on Windows
+    source venv/bin/activate
+```
+
+Install and start Redis server on Windows
+```
+brew install redis
+redis-server /usr/local/etc/redis.conf
+```
 * [Linux](https://redis.io/topics/quickstart)
-* [Mac](https://medium.com/@petehouston/install-and-config-redis-on-mac-os-x-via-homebrew-eb8df9a4f298)
 * [Windows](https://www.onlinetutorialspoint.com/spring-boot/setup-install-redis-server-on-windows-10.html)
 
-Start the Redis server 
-  
 Navigate back to the main folder. Installing requirements and making migrations
 
     pip install -r requirements.txt
