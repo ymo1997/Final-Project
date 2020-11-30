@@ -1,6 +1,5 @@
 static/scss
 theme/
-media/
 **/venv/
 auctionApp/__pycache__/
 auctionProject/__pycache__/
