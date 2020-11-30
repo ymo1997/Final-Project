@@ -72,9 +72,9 @@ db.user.find()
 
 ```
 docker exec -it postgresql /bin/bash
-psql -U dbuser -d postgres -h localhost
+psql -U dbuser -d item_db -h localhost
 \d
-select * from item_table;
+select * from item;
 ```
 
 4. Open and Check out API by using Swagger (might be dockerized later)
