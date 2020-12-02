@@ -111,7 +111,7 @@ class ShoppingCart(object):
                     'item_id': int(item_id), 'price': float(price)
                     })
             returned_data[MESSAGE] = shopping_cart_checkout_shopping_cart_suceeded
-        except:
+        except Exception as e:
             log_for_except(__name__, e)
             returned_data[MESSAGE] = shopping_cart_checkout_shopping_cart_failed
             return False, returned_data
