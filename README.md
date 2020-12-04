@@ -125,6 +125,9 @@ docker run -d --name notification_service -v /Users/yinghuamo/Documents/GitHub/F
 docker run -d --name search_service -v /Users/yinghuamo/Documents/GitHub/Final-Project:/Final-Project ymo1997/service_with_postgresql
 docker run -d --name login_service -v /Users/yinghuamo/Documents/GitHub/Final-Project:/Final-Project ymo1997/service_with_postgresql
 
+// Web-server
+docker run -d --name web_server -p 8000:8000 -v /Users/yinghuamo/Documents/GitHub/Final-Project:/Final-Project ymo1997/web_server
+
 ```
 ### Start services
 New a terminal for container `apis`
