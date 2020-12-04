@@ -1,10 +1,10 @@
 from flask import Flask, request, jsonify
-# from flasgger import Swagger
+from flasgger import Swagger
 from config import *
 
 #---------- CONFIG ----------#
 app = Flask(__name__)
-# Swagger(app)
+Swagger(app)
 CONFIG = {'AMQP_URI': "amqp://guest:guest@172.17.0.3"}
 
 
