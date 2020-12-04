@@ -5,6 +5,7 @@ Final project for MPCS 51205 Aut 2020 from Team 4 - White Fifty Fifty
 ### Frontend
 
 Tech stack: HTML, CSS, JavaScript, Django, Redis 
+
 Note: Django will generate an sqlite database by default, but we are not using it to store any information.
 
 ### Backend
@@ -99,7 +100,8 @@ python3 Final-Project/service/login.py
 
 ### Run pytest
 http://localhost:5000/apidocs/#/ for APIs Description
-In the local, go under `/test` run pytest.
+
+Locally, go under `/test` run pytest.
 
 ### Website Demo
 
