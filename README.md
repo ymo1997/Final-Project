@@ -105,9 +105,6 @@ pytest
 
 ## Version Updated
 
-### Download tarballs for creating containers
-
-
 ### Generate containers by order
 Please ensure you are not running any containers now.
 
@@ -191,9 +188,18 @@ docker exec -it login_service bash
 python3 Final-Project/service/login.py 
 ``` 
 
-
 ### Run pytest
 In the local, go under `/test` run pytest.
 
 ### Website Demo
 
+New a terminal for container `web_server`
+```
+docker exec -it web_server bash
+sudo service redis-server start
+python3 Final-Project/webserver/manage.py makemigrations
+python3 Final-Project/webserver/manage.py migrate
+python3 Final-Project/webserver/manage.py runserver 0.0.0.0:8000
+``` 
+
+Locally, open browser for http://localhost:8000
