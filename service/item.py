@@ -40,16 +40,21 @@ AUCTION_USER_ID = "auction_user_id"
 AUCTION_PRICE = "auction_price"
 AUCTION_TIME = "auction_time"
 
+shopping_cart_client = RPCClient(ITEM + "_" + SHOPPING_CART)
+shopping_cart_client_2 = RPCClient(ITEM + "_" + SHOPPING_CART + "2")
+notification_client = RPCClient(ITEM + "_" + NOTIFICATION)
+user_client = RPCClient(ITEM + "_" + USER)
 
-
-class item(object):
+class Item(object):
     name = ITEM
 
-    shopping_cart_rpc = RpcProxy(SHOPPING_CART)
-    notification_rpc = RpcProxy(NOTIFICATION)
-    user_rpc = RpcProxy(USER)
+    items_to_shopping_cart = []
 
-    @rpc
+    # shopping_cart_rpc = RpcProxy(SHOPPING_CART)
+    # notification_rpc = RpcProxy(NOTIFICATION)
+    # user_rpc = RpcProxy(USER)
+
+    #@rpc
     def create_item(self, item_name, seller_id, category_id, description, auction_start_time, auction_end_time, starting_price, condition, image_url, shipping_cost):
         self.update_all_auctions_status()
         status = ITEM_STATUS_READY if datetime.now().timestamp() < auction_start_time else ITEM_STATUS_ON_GOING
@@ -74,7 +79,7 @@ class item(object):
         return True, returned_data
 
 
-    @rpc
+    #@rpc
     def delete_item(self, item_id):
         self.update_all_auctions_status()
         try:
@@ -94,7 +99,7 @@ class item(object):
         return True, item_delete_item_suceeded
 
 
-    @rpc 
+    #@rpc 
     def update_item_info(self, item_id, item_name, category_id, description, auction_start_time, auction_end_time, starting_price, condition, image_url, shipping_cost):
         self.update_all_auctions_status()
         params = (item_name, category_id, description, auction_start_time,
@@ -111,7 +116,7 @@ class item(object):
         return True, item_update_item_info_suceeded
 
 
-    @rpc 
+    #@rpc 
     def get_item_info(self, item_id):
         self.update_all_auctions_status()
         returned_data = {ITEM_ID: None, ITEM_NAME: None, SELLER_ID: None, 
@@ -160,7 +165,7 @@ class item(object):
         return True, returned_data
 
 
-    @rpc 
+    #@rpc 
     def report_item(self, item_id):
         self.update_all_auctions_status()
         params = (ITEM_STATUS_REPORTED, item_id)
@@ -170,7 +175,7 @@ class item(object):
         return False, item_update_item_info_failed
 
 
-    @rpc
+    #@rpc
     def create_category(self, category_name):
         self.update_all_auctions_status()
         params = (category_name)
@@ -188,7 +193,7 @@ class item(object):
         return True, returned_data
 
 
-    @rpc
+    #@rpc
     def delete_category(self, category_id):
         self.update_all_auctions_status()
         params = (category_id)
@@ -200,7 +205,7 @@ class item(object):
             return False, item_delete_category_suceeded
 
 
-    @rpc
+    #@rpc
     def modify_category(self, category_id, category_name):
         self.update_all_auctions_status()
         params = (category_name, category_id)
@@ -213,7 +218,7 @@ class item(object):
             return False, item_update_category_suceeded
 
 
-    @rpc
+    #@rpc
     def list_categories(self):
         self.update_all_auctions_status()
         returned_data = {"category_list": [], MESSAGE: None}
@@ -234,7 +239,7 @@ class item(object):
             return False, returned_data
 
 
-    @rpc
+    #@rpc
     def update_item_with_bid(self, auction_id, auction_user_id, item_id, auction_price, auction_time):
         self.update_all_auctions_status()
         query = "SELECT current_auction_price, starting_price, status, current_auction_buyer_id, seller_id\
@@ -306,21 +311,34 @@ class item(object):
             return False, item_update_item_with_bid_failed_db
 
         # send notification
-        result, data = self.user_rpc.get_account_info(current_buyer)
+        # result, data = self.user_rpc.get_account_info(current_buyer)
+        if current_buyer == 'None':
+            current_buyer = None
+        call_str = "user.get_account_info(%s)" % current_buyer
+        result, data = eval(user_client.call(call_str))
+
         if current_buyer is not None:
             email = data['username']
-            self.notification_rpc.send_email(email, "Auction item update", 
-            "A higher bidding price was placed by other buyer.")
+            # self.notification_rpc.send_email(email, "Auction item update", "A higher bidding price was placed by other buyer.")
+            title = "Auction item update"
+            content = "A higher bidding price was placed by other buyer."
+            call_str = "notification.send_email('%s', '%s', '%s')" % (email, title, content)
+            response = notification_client.call(call_str)
             
-        result, data = self.user_rpc.get_account_info(seller_id)
-        email = data['username']
-        self.notification_rpc.send_email(email, "Auction item update", 
-        "A user bid on your item.")
+        # result, data = self.user_rpc.get_account_info(seller_id)
+        call_str = "user.get_account_info(%d)" % seller_id
+        result, data = eval(user_client.call(call_str))
 
+        email = data['username']
+        title = "Auction item update"
+        content = "A user bid on your item."
+
+        # self.notification_rpc.send_email(email, "Auction item update", "A user bid on your item.")
+        call_str = "notification.send_email('%s', '%s', '%s')" % (email, title, content)
+        response = notification_client.call(call_str)
 
 
         try:
-
             cursor.execute(query)
         except Exception as e:
             log_for_except(__name__, e)
@@ -330,7 +348,7 @@ class item(object):
         return True, item_update_item_with_bid_suceeded
 
 
-    @rpc
+    #@rpc
     def list_user_auctioning(self, auction_user_id):
         self.update_all_auctions_status()
         returned_data = {"auction_list": [], MESSAGE: None}
@@ -358,10 +376,12 @@ class item(object):
         return True, returned_data
 
 
-    @rpc
+    #@rpc
     def list_items(self, status = None):
         self.update_all_auctions_status()
         returned_data = {ITEM_LIST: [], MESSAGE: None}
+        if status == 'None':
+            status = None
         if status is None:
             query = """SELECT item_id, item_name, seller_id, buyer_id, \
             item.category_id, category_name, description, status, auction_start_time, \
@@ -409,7 +429,7 @@ class item(object):
         return True, returned_data
 
 
-    @rpc
+    #@rpc
     def stop_item_auction(self, item_id):
         self.update_all_auctions_status()
         params = (item_id)
@@ -427,10 +447,11 @@ class item(object):
             return False, item_stop_item_auction_failed
 
 
-    @rpc
+    #@rpc
     def list_items_by_keyword_on_item_name(self, keyword = None):
         self.update_all_auctions_status()
         returned_data = {ITEM_LIST: [], MESSAGE: None}
+        keyword = None if keyword == 'None' else keyword
         if keyword is None:
             query = """SELECT item_id, item_name, seller_id, buyer_id, \
             item.category_id, category_name, description, status, auction_start_time, \
@@ -478,7 +499,7 @@ class item(object):
         return True, returned_data
 
 
-    @rpc
+    #@rpc
     def list_items_by_category(self, category_id):
         self.update_all_auctions_status()
         returned_data = {ITEM_LIST: [], MESSAGE: None}
@@ -522,7 +543,7 @@ class item(object):
         return True, returned_data
 
 
-    @rpc
+    #@rpc
     def list_user_sell_items(self, user_id):
         self.update_all_auctions_status()
         returned_data = {ITEM_LIST: [], MESSAGE: None}
@@ -567,7 +588,7 @@ class item(object):
         return True, returned_data
 
 
-    @rpc
+    #@rpc
     def delete_user_sell_items(self, user_id):
         result, returned_data = self.list_user_sell_items(user_id)
         if not result:
@@ -582,8 +603,8 @@ class item(object):
 
 
 
-    @rpc
-    def update_all_auctions_status(self):
+    #@rpc
+    def update_all_auctions_status(self, is_from_shopping_cart = False):
         now_timestamp = datetime.now().timestamp()
 
         query = """SELECT item_id, seller_id, auction_start_time, \
@@ -595,7 +616,7 @@ class item(object):
             records = cursor.fetchall()
         except Exception as e:
             log_for_except(__name__, e)
-            return
+            return False, None, None
 
         for record in records:
             item_id = record[0]
@@ -613,6 +634,12 @@ class item(object):
                 else:
                     if status != ITEM_STATUS_COMPLETED:
                         self.set_item_status_completed(item_id, current_auction_buyer_id)
+        
+        if is_from_shopping_cart and len(self.items_to_shopping_cart) != 0:
+            item_id, user_id = self.items_to_shopping_cart.pop()
+            return True, item_id, user_id
+
+        return False, None, None
 
 
     def set_item_status_on_going(self, item_id):
@@ -625,19 +652,61 @@ class item(object):
         self.update_item_status(params)
 
         if user_id is not None:
-            self.shopping_cart_rpc.add_item_to_user_shopping_cart(item_id, user_id)
-
             params = (user_id, item_id)
             query = "UPDATE item SET buyer_id = %d WHERE item_id = %d" % params
-            return try_execute_sql(cursor, query, __name__)
+            if try_execute_sql(cursor, query, __name__):
+                # self.shopping_cart_rpc.add_item_to_user_shopping_cart(item_id, user_id)
+                # call_str = "shopping_cart.add_item_to_user_shopping_cart(%d, %d)" % (item_id, user_id)
+                # response = shopping_cart_client_2.call(call_str)
+                self.items_to_shopping_cart.append((item_id, user_id))
+
+            
 
 
     def update_item_status(self, params):
         query = "UPDATE item SET status = '%s' WHERE item_id = %d" % params
-        return try_execute_sql(cursor, query, __name__)
+        res = try_execute_sql(cursor, query, __name__)
+        return res
 
 
+def on_request(ch, method, props, body):
+    print(body)
+    try:
+        response = eval(body)
+    except:
+        response = False, "Exception in rpc on_request method."
+    ch.basic_publish(
+        exchange = '',
+        routing_key = props.reply_to,
+        body = str(response),
+        properties=pika.BasicProperties(
+            correlation_id=props.correlation_id
+        )
+    )
+    ch.basic_ack(delivery_tag = method.delivery_tag)
 
+def getRpcChannel(queue_names):
+    params = pika.ConnectionParameters(host=rabbit_address)
+    connection = pika.BlockingConnection(params)
+    channel = connection.channel()
+
+    for queue in queue_names:
+        channel.queue_declare(queue = rpc_queue_name_prefix + queue)
+        channel.basic_qos(prefetch_count=prefetch_count)
+        channel.basic_consume(
+            queue = rpc_queue_name_prefix + queue, 
+            on_message_callback = on_request
+        )
+
+    return channel
+
+
+item = Item()
+
+print(" [x] Awaiting RPC requests")
+
+channel = getRpcChannel([ITEM, USER + "_" + ITEM, SHOPPING_CART + "_" + ITEM, AUCTION + "_" + ITEM, SEARCH + "_" + ITEM])
+channel.start_consuming()
 
 
 

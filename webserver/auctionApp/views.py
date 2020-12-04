@@ -13,7 +13,7 @@ from .forms import *
 from django.utils import timezone
 import requests
 
-URL_BASE = "http://127.0.0.1:5000/"
+URL_BASE = "http://172.17.0.3:5000/"
 categories = ["fashion", "electronics", "motors", "collectibles", "home",
               "sporting goods", "toys", "business", "music", "industrial"]
 # Create your views here.

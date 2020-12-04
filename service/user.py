@@ -23,18 +23,20 @@ STATUS_INVALID = "invalid"
 
 NOT_FILLED = "not_filled"
 
+shopping_cart_client = RPCClient(USER + "_" + SHOPPING_CART)
+item_client = RPCClient(USER + "_" + ITEM)
 
 class User(object):
     name = USER
-    shopping_cart_rpc = RpcProxy(SHOPPING_CART)
-    item_rpc = RpcProxy(ITEM)
-
+    # shopping_cart_rpc = RpcProxy(SHOPPING_CART)
+    # item_rpc = RpcProxy(ITEM)
+    
 
     def __init__(self):                                                 
         self.next_new_account_id = self.get_last_id() + 1
 
 
-    @rpc
+    #@rpc
     def create_account(self, username, password, first_name, last_name, date_joined):
         returned_data = {ID: None, MESSAGE: None}
         if self.check_is_username_existed(username):
@@ -55,13 +57,16 @@ class User(object):
         returned_data[MESSAGE] = user_create_account_suceeded
         returned_data[ID] = self.next_new_account_id
 
-        self.shopping_cart_rpc.create_user_shopping_cart(self.next_new_account_id)
+        call_str = "shopping_cart.create_user_shopping_cart(%d)" % (self.next_new_account_id)
+        response = shopping_cart_client.call(call_str)
+        # result, msg = eval(response)
+        # self.shopping_cart_rpc.create_user_shopping_cart(self.next_new_account_id)
         self.next_new_account_id += 1
 
         return True, returned_data
 
 
-    @rpc
+    #@rpc
     def update_account_info(self, account_id, username, password, first_name, last_name):
         condition = {ID: account_id}
         record = user_col.find_one(condition)
@@ -80,7 +85,7 @@ class User(object):
 
 
 
-    @rpc
+    #@rpc
     def delete_account(self, account_id = None, username = None):
         if username is not None:
             if self.check_is_username_existed(username):
@@ -90,14 +95,19 @@ class User(object):
 
         condition = {ID: account_id}
         if self.delete_user_db(condition):
-            self.shopping_cart_rpc.delete_user_shopping_cart(account_id)
-            self.item_rpc.delete_user_sell_items(account_id)
+            # self.shopping_cart_rpc.delete_user_shopping_cart(account_id)
+            call_str = "shopping_cart.delete_user_shopping_cart(%d)" % (account_id)
+            shopping_cart_client.call(call_str)
+
+            # self.item_rpc.delete_user_sell_items(account_id)
+            call_str = "item.delete_user_sell_items(%d)" % (account_id)
+            item_client.call(call_str)
             return True, user_delete_account_suceeded
         else:
             return False, user_delete_account_failed_db
     
 
-    @rpc
+    #@rpc
     def suspend_account(self, account_id = None, username = None):
         if username is not None:
             if self.check_is_username_existed(username):
@@ -116,7 +126,7 @@ class User(object):
             return True, user_suspend_account_suceeded
 
 
-    @rpc
+    #@rpc
     def verify_login_input(self, username, password): 
         if self.check_is_username_existed(username):   
             account_id = self.get_account_id(username)
@@ -133,7 +143,7 @@ class User(object):
             return False, user_verify_login_input_failed_invalid_username, None
 
 
-    @rpc
+    #@rpc
     def get_account_info(self, account_id):
         condition = {ID: account_id}
         returned_data = user_col.find_one(condition)
@@ -186,5 +196,48 @@ class User(object):
         last_account = user_col.find().sort(ID, -1).limit(1)
         if last_account.count() > 0:
             return last_account[0][ID]
+
+
+
+#---------- START RPC HERE ----------#
+
+def on_request(ch, method, props, body):
+    print(body)
+    # try:
+    response = eval(body)
+    # except:
+    # response = False, "Exception in rpc on_request method."
+    ch.basic_publish(
+        exchange = '',
+        routing_key = props.reply_to,
+        body = str(response),
+        properties=pika.BasicProperties(
+            correlation_id=props.correlation_id
+        )
+    )
+    ch.basic_ack(delivery_tag = method.delivery_tag)
+
+
+def getRpcChannel(queue_names):
+    params = pika.ConnectionParameters(host=rabbit_address)
+    connection = pika.BlockingConnection(params)
+    channel = connection.channel()
+
+    for queue in queue_names:
+        channel.queue_declare(queue = rpc_queue_name_prefix + queue)
+        channel.basic_qos(prefetch_count=prefetch_count)
+        channel.basic_consume(
+            queue = rpc_queue_name_prefix + queue, 
+            on_message_callback = on_request
+        )
+
+    return channel
+
+user = User()
+
+print(" [x] Awaiting RPC requests")
+
+channel = getRpcChannel([USER, ITEM + "_" + USER, LOGIN + "_" + USER, ADMIN + "_" + USER])
+channel.start_consuming()
 
 

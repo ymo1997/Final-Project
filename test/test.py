@@ -10,7 +10,7 @@ def pytest_namespace():
 
 def test_user_create_account():
     params = {
-        'email': 'am424sfasdfweraasfgsaweon@mail.com', 
+        'email': 'aasdfaagfhfsafasd@mail.com', 
         'password': 'JOHNSON',
         'first_name': 'Boris',
         'last_name':'Johnson',
@@ -53,26 +53,6 @@ def test_user_info_edit():
     assert response.json()['last_name'] == 'Biden'
 
 
-def test_user_suspend():
-    params = {
-        'account_id': pytest.newly_created_user_id
-    }
-    api_url = server_url + '/user/suspend-account'
-
-    response = post(api_url, json = params)
-    assert response.status_code == 200
-
-    params = {
-        'email': 'Johnson@mail.com',
-        'password': 'JOHNSON'
-    }
-    api_url = server_url + '/login/login'
-
-    response = post(api_url, json = params)
-    assert response.status_code == 400
-    assert response.json()["_id"] == None
-
-
 def test_user_delete():
     params = {
         'description': 'This pair of Chinese republic period miniature porcelain vases',
@@ -111,5 +91,4 @@ def test_user_delete():
     response = post(api_url, json = params)
     record = response.json()
     assert response.status_code == 400
-
 

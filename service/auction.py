@@ -18,15 +18,20 @@ STATUS_INVALID = "invalid"
 MESSAGE = "msg"
 AUCTION_LIST = "auction_list"
 
+item_client = RPCClient(AUCTION + "_" + ITEM)
+
 
 class Auction(object):
     name = AUCTION
 
-    item_rpc = RpcProxy(ITEM)
+    # item_rpc = RpcProxy(ITEM)
 
-    @rpc
+    #@rpc
     def bid_item(self, auction_user_id, item_id, auction_price):
-        self.item_rpc.update_all_auctions_status()
+        # self.item_rpc.update_all_auctions_status()
+        call_str = "item.update_all_auctions_status()"
+        item_client.call(call_str)
+
         returned_data = {AUCTION_ID: None, MESSAGE: None}
         auction_time = datetime.now().timestamp()
 
@@ -42,8 +47,12 @@ class Auction(object):
             log_for_except(__name__, e)
             returned_data[MESSAGE] = auction_bid_item_failed
             return False, returned_data
-        result, msg = self.item_rpc.update_item_with_bid(auction_id, auction_user_id, item_id, auction_price, auction_time)
+        # result, msg = self.item_rpc.update_item_with_bid(auction_id, auction_user_id, item_id, auction_price, auction_time)
+        call_str = "item.update_item_with_bid(%d, %d, %d, %f, %d)" % (auction_id, auction_user_id, item_id, auction_price, auction_time)
+        result, msg = eval(item_client.call(call_str))
 
+        print(111)
+        print((result, msg))
         if result:
             returned_data[MESSAGE] = auction_bid_item_suceeded
             params = (STATUS_VALID, auction_id)
@@ -55,9 +64,12 @@ class Auction(object):
             return False, returned_data
         
 
-    @rpc
+    #@rpc
     def get_auction_history(self, item_id):
-        self.item_rpc.update_all_auctions_status()
+        # self.item_rpc.update_all_auctions_status()
+        call_str = "item.update_all_auctions_status()"
+        item_client.call(call_str)
+
         returned_data = {MESSAGE: None, AUCTION_LIST: None}
         query = "SELECT * FROM auction WHERE item_id = %s " %(item_id)
 
@@ -84,113 +96,43 @@ class Auction(object):
         return True, res
 
 
+def on_request(ch, method, props, body):
+    print(body)
+    # try:
+    response = eval(body)
+    # except:
+    # response = False, "Exception in rpc on_request method."
+    ch.basic_publish(
+        exchange = '',
+        routing_key = props.reply_to,
+        body = str(response),
+        properties=pika.BasicProperties(
+            correlation_id=props.correlation_id
+        )
+    )
+    ch.basic_ack(delivery_tag = method.delivery_tag)
+
+def getRpcChannel(queue_names):
+    params = pika.ConnectionParameters(host=rabbit_address)
+    connection = pika.BlockingConnection(params)
+    channel = connection.channel()
+
+    for queue in queue_names:
+        channel.queue_declare(queue = rpc_queue_name_prefix + queue)
+        channel.basic_qos(prefetch_count=prefetch_count)
+        channel.basic_consume(
+            queue = rpc_queue_name_prefix + queue, 
+            on_message_callback = on_request
+        )
+
+    return channel
 
 
+auction = Auction()
 
+print(" [x] Awaiting RPC requests")
 
-
-
-#     @rpc
-#     def list_item(self, status):
-#         query = "SELECT * FROM item_table WHERE status = '%s'" %(status)
-#         item_db_cursor.execute(query)
-#         res = item_db_cursor.fetchall() 
-#         return True, res
-
-#     @rpc
-#     def update_auction_status(self, item_id):
-#         # we have three status 'ready', 'auction', 'completed'
-#         query = "SELECT auction_start_time, auction_end_time, status FROM item_table WHERE item_id = %s" %(item_id)
-#         item_db_cursor.execute(query)
-#         res = item_db_cursor.fetchone()
-
-#         auction_start_time = int(res[0])
-#         auction_end_time = int(res[1])
-#         status = str(res[2])
-
-#         current_time = time.time()
-#         new_status = None
-
-#         if current_time < auction_start_time:
-#             if status == "ready":
-#                 return False, "ready"
-#             else:
-#                 new_status = "ready"
-#         elif auction_start_time <= current_time <= auction_end_time:
-#             if status == "auction":
-#                 return False, "auction"
-#             else:
-#                 new_status = "auction"
-#         else:
-#             if status == "completed":
-#                 return False, "completed"
-#             else:
-#                 new_status = "completed"
-
-#         if new_status:
-#             query = "UPDATE item_table SET status = '%s' WHERE item_id = '%s'" %(new_status, item_id)
-#             item_db_cursor.execute(query)
-#             return True, new_status
-
-#     @rpc
-#     def set_auction_window(self, item_id, start_time, end_time):
-#         if end_time <= start_time:
-#             return False, "Failed: End time must be larger than start time."
-        
-#         query = "UPDATE item_table SET auction_start_time = '%s', auction_end_time = '%s'\
-#                  WHERE item_id = '%s'" %(start_time, end_time, item_id)
-#         item_db_cursor.execute(query)
-#         return True, "Succeeded"
-
-    
-
-
-#     @rpc
-#     def add_to_cart(self, item_id, user_id, cart_id):
-#         query = "INSERT INTO shopping_cart_table VALUES(%s,%s, %s)" % (cart_id, item_id, user_id)
-#         item_db_cursor.execute(query)
-#         return True, "Succeeded"
-
-
-
-
-
-
-#     ####### for testing/admin ######'
-#     @rpc
-#     def change_bidding_price(self, item_id, user_id, new_price):
-#         query = "UPDATE item_table SET current_auction_price = %s, current_auction_buyer_id = %s\
-#                  WHERE item_id = '%s'" %(new_price, user_id, item_id)
-#         item_db_cursor.execute(query)
-#         return True, "Succeeded"
-
-
-
-#     @rpc
-#     def change_auction_status(self, item_id, new_status):
-#         # Used for testing/admin, change auction status without checking anything
-#         query = "UPDATE item_table SET status = '%s' WHERE item_id = '%s'" %(new_status, item_id)
-#         item_db_cursor.execute(query)
-#         return True, new_status
-# # params = (ITEM_STATUS_READY, now_timestamp)
-# #         query = "UPDATE item SET status = '%s' WHERE %d < auction_start_time" % params
-# #         try:
-# #             cursor.execute(query)
-# #         except Exception as e:
-# #             log_for_except(__name__, e)
-# #             return
-
-
-
-# #         params = (ITEM_STATUS_COMPLETED, now_timestamp)
-# #         query = "UPDATE item SET status = '%s' WHERE %d > auction_end_time" % params
-# #         try:
-# #             cursor.execute(query)
-# #         except Exception as e:
-# #             log_for_except(__name__, e)
-# #             return
-
-
-
+channel = getRpcChannel([AUCTION])
+channel.start_consuming()
 
 

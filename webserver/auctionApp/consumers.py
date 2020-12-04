@@ -6,7 +6,7 @@ import requests
 from datetime import timedelta
 from datetime import datetime
 User = get_user_model()
-URL_BASE = "http://127.0.0.1:5000/"
+URL_BASE = "http://172.17.0.3:5000/"
 
 class ChatConsumer(WebsocketConsumer):
     def fetch_messages(self, data):

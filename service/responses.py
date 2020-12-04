@@ -1,8 +1,10 @@
 import logging
 def try_execute_sql(cursor, query, filename):
     try:
+        print(query)
         cursor.execute(query)
     except Exception as e:
+        print(e)
         log_for_except(filename, e)
         return False
     return True

@@ -14,18 +14,20 @@ PASSWORD = "password"
 DATE_JOINED = "date_joined"
 IS_ADMIN = "is_admin"
 
+user_client = RPCClient(ADMIN + "_" + USER)
 
 class Admin(object):
     name = ADMIN
 
-    user_rpc = RpcProxy(USER)
-    search_rpc = RpcProxy(SEARCH)
+    # user_rpc = RpcProxy(USER)
+    
+
 
     def __init__(self):
         self.next_new_account_id = self.get_last_id() + 1
 
 
-    @rpc
+    #@rpc
     def check_is_admin_existed(self, admin):
         condition = {ADMIN: admin}
         return admin_col.find_one(condition) is not None
@@ -37,7 +39,7 @@ class Admin(object):
         return result[PASSWORD] == password
 
 
-    @rpc
+    #@rpc
     def verify_login_input(self, admin, password):
         if self.check_is_admin_existed(admin):
             account_id = self.get_account_id(admin)
@@ -49,7 +51,7 @@ class Admin(object):
             return False, admin_verify_login_input_failed_invalid_admin, None
 
 
-    @rpc
+    #@rpc
     def create_admin_account(self, admin, password, first_name, last_name, date_joined):
         returned_data = {ID: None, MESSAGE: None}
         if self.check_is_admin_existed(admin):
@@ -74,7 +76,7 @@ class Admin(object):
         return True, returned_data
 
 
-    @rpc
+    #@rpc
     def delete_admin_account(self, admin):
         if self.check_is_admin_existed(admin):
             condition = {ADMIN: admin}
@@ -86,7 +88,7 @@ class Admin(object):
             return False, admin_delete_admin_account_failed_not_existed
 
 
-    @rpc
+    #@rpc
     def get_account_info(self, account_id):
         condition = {ID: account_id}
         returned_data = admin_col.find_one(condition)
@@ -99,24 +101,32 @@ class Admin(object):
             return False, returned_data
 
 
-    @rpc
+    #@rpc
     def suspend_user_account(self, username):
-        return self.user_rpc.suspend_account(username = username)
+        # return self.user_rpc.suspend_account(username = username)
+        call_str = "user.suspend_account(username = '%s')" % (username)
+        return eval(user_client.call(call_str))
 
 
-    @rpc
+    #@rpc
     def create_user_account(self, username, password, first_name, last_name, date_joined):
-        return self.user_rpc.create_account(username, password, first_name, last_name, date_joined)
+        # return self.user_rpc.create_account(username, password, first_name, last_name, date_joined)
+        call_str = "user.create_account('%s', '%s', '%s', '%s', '%s')" % (username, password, first_name, last_name, date_joined)
+        return eval(user_client.call(call_str))
 
 
-    @rpc
+    #@rpc
     def delete_user_account(self, username):
-        return self.user_rpc.delete_account(username = username)
+        # return self.user_rpc.delete_account(username = username)
+        call_str = "user.delete_account(username = '%s')" % (username)
+        return eval(user_client.call(call_str))
 
 
-    @rpc
+    #@rpc
     def update_user_account_info(self, account_id, username, password, first_name, last_name):
-        return self.user_rpc.update_account_info(account_id, username, password, first_name, last_name)
+        # return self.user_rpc.update_account_info(account_id, username, password, first_name, last_name)
+        call_str = "user.update_account_info(%d, '%s', '%s', '%s', '%s')" % (account_id, username, password, first_name, last_name)
+        return eval(user_client.call(call_str))
 
 
     def check_is_account_id_existed(self, account_id):
@@ -148,4 +158,46 @@ class Admin(object):
         last_account = admin_col.find().sort(ID, -1).limit(1)
         if last_account.count() > 0:
             return last_account[0][ID]
+
+
+def on_request(ch, method, props, body):
+    print(body)
+    # try:
+    response = eval(body)
+    # except:
+    # response = False, "Exception in rpc on_request method."
+    ch.basic_publish(
+        exchange = '',
+        routing_key = props.reply_to,
+        body = str(response),
+        properties=pika.BasicProperties(
+            correlation_id=props.correlation_id
+        )
+    )
+    ch.basic_ack(delivery_tag = method.delivery_tag)
+
+def getRpcChannel(queue_names):
+    params = pika.ConnectionParameters(host=rabbit_address)
+    connection = pika.BlockingConnection(params)
+    channel = connection.channel()
+
+    for queue in queue_names:
+        channel.queue_declare(queue = rpc_queue_name_prefix + queue)
+        channel.basic_qos(prefetch_count=prefetch_count)
+        channel.basic_consume(
+            queue = rpc_queue_name_prefix + queue, 
+            on_message_callback = on_request
+        )
+
+    return channel
+
+
+admin = Admin()
+
+print(" [x] Awaiting RPC requests")
+
+channel = getRpcChannel([LOGIN + "_" + ADMIN, ADMIN])
+channel.start_consuming()
+
+
 
