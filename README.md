@@ -117,9 +117,9 @@ python3 service/login.py
 ``` 
 
 ### Run pytest
-Check out http://localhost:5000/apidocs/#/ for APIs Description
+Check out http://localhost:5000/apidocs/#/ for APIs descriptions
 
-Locally, go under `/test` run pytest.
+Locally, go under `/test` run `pytest`.
 
 ### Website Demo
 
