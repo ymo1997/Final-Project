@@ -13,7 +13,7 @@ Based on python packages: pika, Flask, Pymongo, psycopg2, flasgger
 
 ## Steps to run up the system
 ### Generate containers by order
-#### Please ensure you are not running any containers now and create the container by order.
+#### Please ensure you are not running any containers now and create the following containers by order.
 
 ```
 // RabbitMQ
