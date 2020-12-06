@@ -54,6 +54,44 @@ class RPCClient:
         self.response = body
 
 
+class RPCAsyncClient:
+    def __init__(self, queue_name):
+      self.queue_name = queue_name
+      params = pika.ConnectionParameters(host=rabbit_address, heartbeat=0)
+      self.connection = pika.BlockingConnection(params)
+      self.channel = self.connection.channel()
+      result = self.channel.queue_declare(
+          queue = str(uuid.uuid4()), 
+          exclusive=True
+      )
+      self.callback_queue = result.method.queue
+      self.channel.basic_consume(
+          queue = self.callback_queue,
+          on_message_callback = self.on_response
+      )
+         
+    def call(self, n):
+      self.response = None
+
+      self.corr_id = str(uuid.uuid4())
+      self.channel.basic_publish(
+          exchange = '',
+          routing_key = rpc_queue_name_prefix + self.queue_name,
+          properties=pika.BasicProperties(
+              correlation_id=self.corr_id,
+              reply_to=self.callback_queue
+          ),
+          body = n
+      )
+
+      return self.response
+ 
+    def on_response(self, ch, method, props, body):
+      if(self.corr_id == props.correlation_id):
+        self.response = body
+
+
+
 
 
 #---------- DATABASES ----------#

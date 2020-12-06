@@ -42,7 +42,7 @@ AUCTION_TIME = "auction_time"
 
 shopping_cart_client = RPCClient(ITEM + "_" + SHOPPING_CART)
 shopping_cart_client_2 = RPCClient(ITEM + "_" + SHOPPING_CART + "2")
-notification_client = RPCClient(ITEM + "_" + NOTIFICATION)
+notification_client = RPCAsyncClient(ITEM + "_" + NOTIFICATION)
 user_client = RPCClient(ITEM + "_" + USER)
 
 class Item(object):
@@ -323,7 +323,8 @@ class Item(object):
             title = "Auction item update"
             content = "A higher bidding price was placed by other buyer."
             call_str = "notification.send_email('%s', '%s', '%s')" % (email, title, content)
-            response = notification_client.call(call_str)
+            # response = notification_client.call(call_str)
+            notification_client.call(call_str)
             
         # result, data = self.user_rpc.get_account_info(seller_id)
         call_str = "user.get_account_info(%d)" % seller_id
@@ -335,7 +336,8 @@ class Item(object):
 
         # self.notification_rpc.send_email(email, "Auction item update", "A user bid on your item.")
         call_str = "notification.send_email('%s', '%s', '%s')" % (email, title, content)
-        response = notification_client.call(call_str)
+        # response = notification_client.call(call_str)
+        notification_client.call(call_str)
 
 
         try:
