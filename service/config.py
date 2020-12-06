@@ -48,29 +48,9 @@ class RPCClient:
           self.connection.process_data_events()
 
       return self.response
- 
-    def on_response(self, ch, method, props, body):
-      if(self.corr_id == props.correlation_id):
-        self.response = body
 
 
-class RPCAsyncClient:
-    def __init__(self, queue_name):
-      self.queue_name = queue_name
-      params = pika.ConnectionParameters(host=rabbit_address, heartbeat=0)
-      self.connection = pika.BlockingConnection(params)
-      self.channel = self.connection.channel()
-      result = self.channel.queue_declare(
-          queue = str(uuid.uuid4()), 
-          exclusive=True
-      )
-      self.callback_queue = result.method.queue
-      self.channel.basic_consume(
-          queue = self.callback_queue,
-          on_message_callback = self.on_response
-      )
-         
-    def call(self, n):
+    def async_call(self, n):
       self.response = None
 
       self.corr_id = str(uuid.uuid4())

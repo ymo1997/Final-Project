@@ -51,7 +51,6 @@ class Auction(object):
         call_str = "item.update_item_with_bid(%d, %d, %d, %f, %d)" % (auction_id, auction_user_id, item_id, auction_price, auction_time)
         result, msg = eval(item_client.call(call_str))
 
-        print(111)
         print((result, msg))
         if result:
             returned_data[MESSAGE] = auction_bid_item_suceeded
